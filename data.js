@@ -10,7 +10,7 @@ window.dashboardData = {
     "totalBudgetUnit": "亿元",
     "actualSpend": "0.8",
     "actualSpendUnit": "亿元",
-    "executionRate": "68.0%",
+    "executionRate": "58.0%",
     "overallProgress": 65,
     "warningStatus": "暂无严重超支",
     "warningSubtext": "各项预算偏差处于正常红线内"
