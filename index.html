@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="pageTitle">苏州顶津 - 资金预算与工程进度综合看板</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- 引入外部数据文件 -->
+    <script src="data.js?v=1.0"></script>
+
+    <style>
+        body { background-color: #0f172a; color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        .glass-panel { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(51, 65, 85, 0.6); transition: border-color 0.3s ease, box-shadow 0.3s ease; }
+        .glass-panel:hover { border-color: rgba(6, 182, 212, 0.7); box-shadow: 0 0 20px rgba(6, 182, 212, 0.2); }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+        
+        @keyframes auroraFlow { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        .aurora-bottom-bar { position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #3b82f6, #06b6d4, #a855f7, #10b981, #3b82f6); background-size: 300% 100%; animation: auroraFlow 150s linear infinite; border-bottom-left-radius: 0.75rem; border-bottom-right-radius: 0.75rem; }
+        
+        /* 侧边小卡片自动无缝滚动动画 */
+        @keyframes autoScrollUp { 0% { transform: translateY(0); } 100% { transform: translateY(-50%); } }
+        .scroll-wrapper { position: relative; height: 250px; overflow: hidden; }
+        .scroll-inner { display: flex; flex-direction: column; animation: autoScrollUp 150s linear infinite; }
+        .scroll-wrapper:hover .scroll-inner { animation-play-state: paused; }
+        
+        /* 表格 5 行平滑滚动动画 */
+        @keyframes tableAutoScroll { 0% { transform: translateY(0); } 100% { transform: translateY(-50%); } }
+        .table-scroll-wrapper { position: relative; height: 240px; overflow: hidden; } 
+        .table-scroll-inner { animation: tableAutoScroll 120s linear infinite; }
+        .table-scroll-wrapper:hover .table-scroll-inner { animation-play-state: paused; }
+
+        .custom-tooltip { pointer-events: none !important; transition: opacity 0.2s ease-out, top 0.05s ease-out, left 0.05s ease-out; will-change: top, left, opacity; z-index: 9999; }
+    </style>
+</head>
+<body class="min-h-screen p-4 md:p-6 custom-scrollbar relative">
+
+    <!-- Tooltips -->
+    <div id="projectTooltip" class="custom-tooltip fixed hidden opacity-0 glass-panel rounded-xl p-4 w-72 shadow-2xl border border-cyan-500/40 bg-slate-900/95 backdrop-blur-md">
+        <div class="flex justify-between items-start mb-2.5 pb-2 border-b border-slate-700/80">
+            <h4 id="ttName" class="font-bold text-sm text-cyan-300">项目名称</h4>
+            <span id="ttStatus" class="text-[11px] px-2 py-0.5 rounded font-mono font-medium">状态</span>
+        </div>
+        <div class="space-y-2 text-xs">
+            <div class="flex items-center justify-between"><span class="text-slate-400 flex items-center gap-1.5"><i data-lucide="building" class="w-3.5 h-3.5 text-blue-400"></i> 所属部门</span><span id="ttDept" class="text-slate-200 font-medium">--</span></div>
+            <div class="flex items-center justify-between"><span class="text-slate-400 flex items-center gap-1.5"><i data-lucide="coins" class="w-3.5 h-3.5 text-amber-400"></i> 项目总价（万元）</span><span id="ttCost" class="text-amber-300 font-mono font-semibold">--</span></div>
+            <div class="flex items-center justify-between"><span class="text-slate-400 flex items-center gap-1.5"><i data-lucide="truck" class="w-3.5 h-3.5 text-emerald-400"></i> 合作供应商</span><span id="ttSupplier" class="text-slate-200 font-medium truncate max-w-[140px]">--</span></div>
+            <div class="flex items-center justify-between"><span class="text-slate-400 flex items-center gap-1.5"><i data-lucide="user" class="w-3.5 h-3.5 text-purple-400"></i> 项目负责人</span><span id="ttManager" class="text-slate-200 font-medium">--</span></div>
+            <div class="flex items-center justify-between"><span class="text-slate-400 flex items-center gap-1.5"><i data-lucide="tag" class="w-3.5 h-3.5 text-cyan-400"></i> 维修费/固定资产</span><span id="ttCategories" class="text-slate-200 font-medium">--</span></div>
+            <div class="flex items-center justify-between"><span class="text-slate-400 flex items-center gap-1.5"><i data-lucide="tag" class="w-3.5 h-3.5 text-cyan-400"></i> 备注</span><span id="ttNotes" class="text-slate-200 font-medium">--</span></div>
+         </div>
+    </div>
+
+    <div id="planTooltip" class="custom-tooltip fixed hidden opacity-0 glass-panel rounded-xl p-4 w-80 shadow-2xl border border-indigo-500/40 bg-slate-900/95 backdrop-blur-md">
+        <div class="flex justify-between items-start mb-2.5 pb-2 border-b border-slate-700/80">
+            <div>
+                <h4 id="planTtName" class="font-bold text-sm text-indigo-300">技改项目名称</h4>
+                <span id="planTtCategory" class="text-[10px] text-slate-400 bg-slate-800 px-1.5 py-0.5 rounded border border-slate-700 mt-1 inline-block">分类</span>
+            </div>
+            <span id="planTtStatus" class="text-[11px] px-2 py-0.5 rounded font-mono font-medium">状态</span>
+        </div>
+        <div class="space-y-2 text-xs">
+            <div><span class="text-slate-400 block mb-0.5 flex items-center gap-1"><i data-lucide="alert-circle" class="w-3 h-3 text-amber-400"></i> 现状说明：</span><p id="planTtCurrent" class="text-slate-300 leading-snug pl-4">--</p></div>
+            <div><span class="text-slate-400 block mb-0.5 flex items-center gap-1"><i data-lucide="wrench" class="w-3 h-3 text-cyan-400"></i> 改善方案：</span><p id="planTtImprovement" class="text-slate-300 leading-snug pl-4">--</p></div>
+            <div class="grid grid-cols-2 gap-2 pt-1 border-t border-slate-800">
+                <div><span class="text-slate-400">预估费用:</span><span id="planTtCost" class="text-amber-300 font-mono font-semibold block">--</span></div>
+                <div><span class="text-slate-400">预估年效益:</span><span id="planTtBenefit" class="text-emerald-400 font-mono font-semibold block">--</span></div>
+            </div>
+            <div class="grid grid-cols-2 gap-2 pt-1 border-t border-slate-800">
+                <div><span class="text-slate-400">预计完成:</span><span id="planTtEndTime" class="text-slate-200 font-mono block">--</span></div>
+                <div><span class="text-slate-400">责任人:</span><span id="planTtManager" class="text-indigo-300 font-medium block">--</span></div>
+            </div>
+            <div class="pt-1 border-t border-slate-800"><span class="text-slate-400">进度说明:</span><span id="planTtProgressDesc" class="text-slate-300 block">--</span></div>
+        </div>
+    </div>
+
+    <div id="assetTooltip" class="custom-tooltip fixed hidden opacity-0 glass-panel rounded-xl p-4 w-80 shadow-2xl border border-emerald-500/40 bg-slate-900/95 backdrop-blur-md">
+        <div class="flex justify-between items-start mb-2.5 pb-2 border-b border-slate-700/80">
+            <div>
+                <h4 id="assetTtName" class="font-bold text-sm text-emerald-300">资产名称</h4>
+                <span id="assetTtCategory" class="text-[10px] text-slate-400 bg-slate-800 px-1.5 py-0.5 rounded border border-slate-700 mt-1 inline-block">分类</span>
+            </div>
+            <span id="assetTtStatus" class="text-[11px] px-2 py-0.5 rounded font-mono font-medium">状态</span>
+        </div>
+        <div class="space-y-2 text-xs">
+            <div class="flex items-center justify-between"><span class="text-slate-400 flex items-center gap-1.5"><i data-lucide="building" class="w-3.5 h-3.5 text-blue-400"></i> 所属部门</span><span id="assetTtDept" class="text-slate-200 font-medium">--</span></div>
+            <div class="flex items-center justify-between"><span class="text-slate-400 flex items-center gap-1.5"><i data-lucide="calendar-check-2" class="w-3.5 h-3.5 text-purple-400"></i> 入固月份</span><span id="assetTtMonth" class="text-slate-200 font-mono font-semibold">--</span></div>
+            <div class="grid grid-cols-2 gap-2 pt-1 border-t border-slate-800">
+                <div><span class="text-slate-400 block">计划预算:</span><span id="assetTtBudget" class="text-blue-300 font-mono font-semibold">--</span></div>
+                <div><span class="text-slate-400 block">实际支出:</span><span id="assetTtActual" class="text-amber-300 font-mono font-semibold">--</span></div>
+            </div>
+            <div class="flex items-center justify-between pt-1 border-t border-slate-800">
+                <span class="text-slate-400 flex items-center gap-1.5"><i data-lucide="trending-down" class="w-3.5 h-3.5 text-emerald-400"></i> 偏差 / 执行率</span><span id="assetTtDiff" class="font-mono font-bold">--</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="glass-panel rounded-xl p-4 mb-6 flex flex-col md:flex-row justify-between items-center gap-4 shadow-xl relative overflow-hidden">
+        <div class="flex items-center gap-3.5 z-10">
+            <div class="p-2.5 bg-slate-800/90 rounded-xl border border-cyan-500/40 text-cyan-400"><i data-lucide="building-2" class="w-6 h-6"></i></div>
+            <div>
+                <h1 id="headerTitle" class="text-xl md:text-2xl font-bold tracking-wide text-white flex items-center gap-2">--</h1>
+                <p id="headerSubtitle" class="text-xs text-slate-400 mt-0.5">--</p>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-4 text-sm text-slate-300 z-10">
+            <div class="flex items-center gap-2 bg-slate-800/80 px-3 py-1.5 rounded-lg border border-slate-700/80"><i data-lucide="calendar" class="w-4 h-4 text-cyan-400"></i><span id="headerDate" class="font-mono">--</span></div>
+            <div class="flex items-center gap-2 bg-slate-800/80 px-3 py-1.5 rounded-lg border border-slate-700/80"><i data-lucide="user-check" class="w-4 h-4 text-emerald-400"></i><span id="headerUser">--</span></div>
+        </div>
+        <div class="aurora-bottom-bar"></div>
+    </header>
+
+    <!-- KPI -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="glass-panel p-5 rounded-xl flex items-center justify-between relative overflow-hidden group">
+            <div>
+                <p class="text-sm font-medium text-slate-400 flex items-center gap-1.5"><i data-lucide="wallet" class="w-4 h-4 text-blue-400"></i> 年度项目总预算</p>
+                <h2 class="text-2xl font-bold text-white mt-2 font-mono">¥ <span id="kpiTotalBudget">--</span> <span id="kpiTotalBudgetUnit" class="text-base font-normal text-slate-300">亿元</span></h2>
+            </div>
+        </div>
+        <div class="glass-panel p-5 rounded-xl flex items-center justify-between relative overflow-hidden group">
+            <div>
+                <p class="text-sm font-medium text-slate-400 flex items-center gap-1.5"><i data-lucide="credit-card" class="w-4 h-4 text-amber-400"></i> 实际已支出</p>
+                <h2 class="text-2xl font-bold text-white mt-2 font-mono">¥ <span id="kpiActualSpend">--</span> <span id="kpiActualSpendUnit" class="text-base font-normal text-slate-300">亿元</span></h2>
+                <span id="kpiExecutionRate" class="inline-block mt-1 text-xs px-2 py-0.5 bg-amber-500/20 text-amber-300 rounded font-mono">执行率 --%</span>
+            </div>
+        </div>
+        <div class="glass-panel p-5 rounded-xl flex items-center justify-between relative overflow-hidden group">
+            <div>
+                <p class="text-sm font-medium text-slate-400 flex items-center gap-1.5"><i data-lucide="activity" class="w-4 h-4 text-cyan-400"></i> 年度工程总体进度</p>
+                <h2 class="text-2xl font-bold text-white mt-2 font-mono" id="overallProgressText">--%</h2>
+                <div class="w-32 bg-slate-700 h-2 rounded-full mt-2 overflow-hidden"><div id="overallProgressBar" class="bg-cyan-400 h-full rounded-full" style="width: 0%;"></div></div>
+            </div>
+        </div>
+        <div class="glass-panel p-5 rounded-xl flex items-center justify-between relative overflow-hidden group">
+            <div>
+                <p class="text-sm font-medium text-slate-400 flex items-center gap-1.5"><i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i> 预警状态</p>
+                <h2 id="kpiWarningStatus" class="text-xl font-bold text-emerald-400 mt-2 flex items-center gap-2">--</h2>
+                <p id="kpiWarningSubtext" class="text-xs text-slate-400 mt-1">--</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts & Lists -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6">
+        <div class="lg:col-span-5 glass-panel p-5 rounded-xl flex flex-col justify-between">
+            <div class="flex justify-between items-center mb-4"><h3 class="font-bold text-slate-200 flex items-center gap-2"><i data-lucide="bar-chart-3" class="w-5 h-5 text-blue-400"></i> 资金预算 vs 实际使用对比</h3></div>
+            <div class="relative h-64 w-full"><canvas id="budgetChart"></canvas></div>
+        </div>
+        
+        <!-- 施工进度与里程碑 -->
+        <div class="lg:col-span-4 glass-panel p-5 rounded-xl flex flex-col justify-between">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-slate-200 flex items-center gap-2"><i data-lucide="file-check-2" class="w-5 h-5 text-cyan-400"></i> 施工进度与里程碑</h3>
+                <button id="openProjectModalBtn" class="text-xs text-cyan-400 hover:text-cyan-300 bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 px-2.5 py-1 rounded-md transition-all flex items-center gap-1">
+                    <i data-lucide="list-filter" class="w-3.5 h-3.5"></i> 详细列表
+                </button>
+            </div>
+            <div class="scroll-wrapper cursor-pointer"><div class="scroll-inner gap-3.5" id="projectScrollContainer"></div></div>
+        </div>
+
+        <!-- 26-27年规划技改项目 -->
+        <div class="lg:col-span-3 glass-panel p-5 rounded-xl flex flex-col justify-between">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-slate-200 flex items-center gap-2"><i data-lucide="list-todo" class="w-5 h-5 text-indigo-400"></i>26-27年规划技改项目</h3>
+                <button id="openPlanModalBtn" class="text-xs text-indigo-400 hover:text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/30 px-2.5 py-1 rounded-md transition-all flex items-center gap-1">
+                    <i data-lucide="list-filter" class="w-3.5 h-3.5"></i> 详细列表
+                </button>
+            </div>
+            <div class="scroll-wrapper cursor-pointer"><div class="scroll-inner gap-2.5" id="planScrollContainer"></div></div>
+        </div>
+    </div>
+
+    <!-- Table -->
+    <div class="glass-panel p-5 rounded-xl">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="font-bold text-slate-200 flex items-center gap-2"><i data-lucide="table" class="w-5 h-5 text-emerald-400"></i> 资产支出明细数据表</h3>
+            <div class="flex items-center gap-3">
+                <div class="text-xs text-slate-400">单位：人民币 (元)</div>
+                <button id="openAssetModalBtn" class="text-xs text-emerald-400 hover:text-emerald-300 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 px-2.5 py-1 rounded-md transition-all flex items-center gap-1">
+                    <i data-lucide="list-filter" class="w-3.5 h-3.5"></i> 详细列表
+                </button>
+            </div>
+        </div>
+        
+        <!-- 表格固定表头 + 动态5行自动滚动内容 -->
+        <div class="w-full overflow-x-auto custom-scrollbar">
+            <div class="min-w-[800px]">
+                <!-- 表头固定 -->
+                <table class="w-full text-left text-sm text-slate-300 table-fixed">
+                    <thead class="bg-slate-800/90 text-xs text-slate-400 uppercase border-b border-slate-700 block">
+                        <tr class="flex items-center h-10">
+                            <th class="w-[22%] px-4 font-semibold">资产名称</th>
+                            <th class="w-[12%] px-4 font-semibold">分类</th>
+                            <th class="w-[14%] px-4 font-semibold">所属部门</th>
+                            <th class="w-[14%] px-4 font-semibold text-right">计划预算(元)</th>
+                            <th class="w-[14%] px-4 font-semibold text-right">实际支出(元)</th>
+                            <th class="w-[10%] px-4 font-semibold text-right">偏差/执行率</th>
+                            <th class="w-[8%] px-4 font-semibold text-center">入固月份</th>
+                            <th class="w-[6%] px-4 font-semibold text-center">状态</th>
+                        </tr>
+                    </thead>
+                </table>
+
+                <!-- 滚动区域：恰好显示5行 -->
+                <div class="table-scroll-wrapper">
+                    <table class="w-full text-left text-sm text-slate-300 table-fixed">
+                        <tbody class="table-scroll-inner block divide-y divide-slate-800" id="assetTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 施工进度与里程碑 - 详细列表弹窗框 -->
+    <div id="projectModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[10000] hidden flex items-center justify-center p-4">
+        <div class="glass-panel w-full max-w-[95vw] rounded-2xl p-6 shadow-2xl border border-cyan-500/40 bg-slate-900/95 flex flex-col max-h-[85vh]">
+            <!-- 弹窗标题栏 -->
+            <div class="flex justify-between items-center pb-4 mb-4 border-b border-slate-700/80">
+                <div class="flex items-center gap-2.5">
+                    <div class="p-2 bg-cyan-500/20 text-cyan-400 rounded-lg border border-cyan-500/30">
+                        <i data-lucide="file-check-2" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-white">施工进度与里程碑明细表</h3>
+                        <p class="text-xs text-slate-400">查看工程项目完整进度与字段信息，支持表头多维筛选</p>
+                    </div>
+                </div>
+                <button id="closeProjectModalBtn" class="text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 p-2 rounded-xl transition-colors border border-slate-700">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- 表格区域 -->
+            <div class="flex-1 overflow-auto custom-scrollbar border border-slate-800 rounded-xl">
+                <table class="w-full text-left text-sm text-slate-300 border-collapse min-w-[1300px]">
+                    <thead class="bg-slate-800/95 text-xs text-slate-300 sticky top-0 z-10 backdrop-blur-md border-b border-slate-700">
+                        <tr>
+                            <th class="p-3 font-semibold text-center w-12 text-slate-400">#</th>
+                            <th class="p-3 font-semibold w-48">
+                                <div class="flex flex-col gap-1.5">
+                                    <span class="text-slate-300">项目名称</span>
+                                    <input type="text" id="filterProjectName" placeholder="筛选项目..." class="w-full px-2 py-1 bg-slate-900/90 border border-slate-700/80 rounded text-xs text-slate-200 focus:outline-none focus:border-cyan-500">
+                                </div>
+                            </th>
+                            <th class="p-3 font-semibold w-32">
+                                <div class="flex flex-col gap-1.5">
+                                    <span class="text-slate-300">所属部门</span>
+                                    <select id="filterProjectDept" class="w-full px-2 py-1 bg-slate-900/90 border border-slate-700/80 rounded text-xs text-slate-200 focus:outline-none focus:border-cyan-500">
+                                        <option value="">全部部门</option>
+                                    </select>
+                                </div>
+                            </th>
+                            <th class="p-3 font-semibold text-right w-28">项目总价（万元）</th>
+                            <th class="p-3 font-semibold w-36">
+                                <div class="flex flex-col gap-1.5">
+                                    <span class="text-slate-300">合作供应商</span>
+                                    <input type="text" id="filterProjectSupplier" placeholder="筛选供应商..." class="w-full px-2 py-1 bg-slate-900/90 border border-slate-700/80 rounded text-xs text-slate-200 focus:outline-none focus:border-cyan-500">
+                                </div>
+                            </th>
+                            <th class="p-3 font-semibold w-24">
+                                <div class="flex flex-col gap-1.5">
+                                    <span class="text-slate-300">负责人</span>
+                                    <input type="text" id="filterProjectManager" placeholder="筛选负责人..." class="w-full px-2 py-1 bg-slate-900/90 border border-slate-700/80 rounded text-xs text-slate-200 focus:outline-none focus:border-cyan-500">
+                                </div>
+                            </th>
+                            <th class="p-3 font-semibold w-36">开始时间</th>
+                            <th class="p-3 font-semibold w-32">
+                                <div class="flex flex-col gap-1.5">
+                                    <span class="text-slate-300">维修费/固定资产</span>
+                                    <select id="filterProjectCategory" class="w-full px-2 py-1 bg-slate-900/90 border border-slate-700/80 rounded text-xs text-slate-200 focus:outline-none focus:border-cyan-500">
+                                        <option value="">全部类型</option>
+                                    </select>
+                                </div>
+                            </th>
+                            <th class="p-3 font-semibold w-48">备注</th>
+                            <th class="p-3 font-semibold text-center w-28">
+                                <div class="flex flex-col gap-1.5">
+                                    <span class="text-slate-300">状态</span>
+                                    <select id="filterProjectStatus" class="w-full px-2 py-1 bg-slate-900/90 border border-slate-700/80 rounded text-xs text-slate-200 focus:outline-none focus:border-cyan-500">
+                                        <option value="">全部状态</option>
+                                    </select>
+                                </div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="modalProjectTableBody" class="divide-y divide-slate-800/80 bg-slate-900/40"></tbody>
+                    <!-- 动态加总行 -->
+                    <tfoot class="bg-slate-800/90 sticky bottom-0 z-10 border-t border-slate-700 font-semibold text-slate-200">
+                        <tr>
+                            <td colspan="3" class="p-3 text-right">筛选合计 / 总计：</td>
+                            <td class="p-3 text-right font-mono text-amber-300" id="modalProjectTotalCost">0.00</td>
+                            <td colspan="6" class="p-3"></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            
+            <!-- 弹窗底部操作与统计信息 -->
+            <div class="pt-4 mt-2 flex justify-between items-center text-xs text-slate-400">
+                <div>数据统计：共显示 <span id="modalProjectCount" class="text-cyan-400 font-bold font-mono">0</span> 项</div>
+                <button id="resetProjectFilterBtn" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg border border-slate-700 transition-colors flex items-center gap-1.5">
+                    <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> 重置筛选
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 27年规划技改项目 - 详细列表弹窗框 -->
+    <div id="planModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[10000] hidden flex items-center justify-center p-4">
+        <div class="glass-panel w-full max-w-[95vw] rounded-2xl p-6 shadow-2xl border border-indigo-500/40 bg-slate-900/95 flex flex-col max-h-[85vh]">
+            <!-- 弹窗标题栏 -->
+            <div class="flex justify-between items-center pb-4 mb-4 border-b border-slate-700/80">
+                <div class="flex items-center gap-2.5">
+                    <div class="p-2 bg-indigo-500/20 text-indigo-400 rounded-lg border border-indigo-500/30">
+                        <i data-lucide="list-todo" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-white">27年规划技改项目明细表</h3>
+                        <p class="text-xs text-slate-400">查看技改项目完整信息与字段（含现状说明与改善方案），支持表头多维筛选</p>
+                    </div>
+                </div>
+                <button id="closePlanModalBtn" class="text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 p-2 rounded-xl transition-colors border border-slate-700">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- 表格区域（使用 table-fixed 与百分比 colgroup，消除底部横向拉条） -->
+            <div class="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar border border-slate-800 rounded-xl">
+                <table class="w-full text-left text-xs text-slate-300 border-collapse table-fixed">
+                    <colgroup>
+                        <col style="width: 4%;">
+                        <col style="width: 12%;">
+                        <col style="width: 8%;">
+                        <col style="width: 18%;">
+                        <col style="width: 18%;">
+                        <col style="width: 8%;">
+                        <col style="width: 8%;">
+                        <col style="width: 8%;">
+                        <col style="width: 8%;">
+                        <col style="width: 8%;">
+                    </colgroup>
+                    <thead class="bg-slate-800/95 text-xs text-slate-300 sticky top-0 z-10 backdrop-blur-md border-b border-slate-700">
+                        <tr>
+                            <th class="p-2.5 font-semibold text-center text-slate-400">#</th>
+                            <th class="p-2.5 font-semibold">
+                                <div class="flex flex-col gap-1">
+                                    <span>项目名称</span>
+                                    <input type="text" id="filterPlanName" placeholder="筛选..." class="w-full px-1.5 py-0.5 bg-slate-900/90 border border-slate-700/80 rounded text-[11px] text-slate-200 focus:outline-none focus:border-indigo-500">
+                                </div>
+                            </th>
+                            <th class="p-2.5 font-semibold">
+                                <div class="flex flex-col gap-1">
+                                    <span>分类</span>
+                                    <select id="filterPlanCategory" class="w-full px-1.5 py-0.5 bg-slate-900/90 border border-slate-700/80 rounded text-[11px] text-slate-200 focus:outline-none focus:border-indigo-500">
+                                        <option value="">全部</option>
+                                    </select>
+                                </div>
+                            </th>
+                            <th class="p-2.5 font-semibold">现状说明</th>
+                            <th class="p-2.5 font-semibold">改善方案</th>
+                            <th class="p-2.5 font-semibold text-right">预估费用</th>
+                            <th class="p-2.5 font-semibold text-right">年效益</th>
+                            <th class="p-2.5 font-semibold text-center">完成</th>
+                            <th class="p-2.5 font-semibold">
+                                <div class="flex flex-col gap-1">
+                                    <span>责任人</span>
+                                    <input type="text" id="filterPlanManager" placeholder="筛选..." class="w-full px-1.5 py-0.5 bg-slate-900/90 border border-slate-700/80 rounded text-[11px] text-slate-200 focus:outline-none focus:border-indigo-500">
+                                </div>
+                            </th>
+                            <th class="p-2.5 font-semibold text-center">
+                                <div class="flex flex-col gap-1">
+                                    <span>状态</span>
+                                    <select id="filterPlanStatus" class="w-full px-1.5 py-0.5 bg-slate-900/90 border border-slate-700/80 rounded text-[11px] text-slate-200 focus:outline-none focus:border-indigo-500">
+                                        <option value="">全部</option>
+                                    </select>
+                                </div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="modalPlanTableBody" class="divide-y divide-slate-800/80 bg-slate-900/40"></tbody>
+                </table>
+            </div>
+            
+            <!-- 弹窗底部操作与统计信息 -->
+            <div class="pt-4 mt-2 flex justify-between items-center text-xs text-slate-400">
+                <div>数据统计：共显示 <span id="modalPlanCount" class="text-indigo-400 font-bold font-mono">0</span> 项</div>
+                <button id="resetPlanFilterBtn" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg border border-slate-700 transition-colors flex items-center gap-1.5">
+                    <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> 重置筛选
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 资产支出明细数据表 - 详细列表弹窗框 -->
+    <div id="assetModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[10000] hidden flex items-center justify-center p-4">
+        <div class="glass-panel w-full max-w-6xl rounded-2xl p-6 shadow-2xl border border-emerald-500/40 bg-slate-900/95 flex flex-col max-h-[85vh]">
+            <!-- 弹窗标题栏 -->
+            <div class="flex justify-between items-center pb-4 mb-4 border-b border-slate-700/80">
+                <div class="flex items-center gap-2.5">
+                    <div class="p-2 bg-emerald-500/20 text-emerald-400 rounded-lg border border-emerald-500/30">
+                        <i data-lucide="table" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-white">资产支出明细数据完整表</h3>
+                        <p class="text-xs text-slate-400">查看资产支出全部明细数据与字段，支持表头分列筛选</p>
+                    </div>
+                </div>
+                <button id="closeAssetModalBtn" class="text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 p-2 rounded-xl transition-colors border border-slate-700">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- 表格区域 -->
+            <div class="flex-1 overflow-auto custom-scrollbar border border-slate-800 rounded-xl">
+                <table class="w-full text-left text-sm text-slate-300 border-collapse min-w-[950px]">
+                    <thead class="bg-slate-800/95 text-xs text-slate-300 sticky top-0 z-10 backdrop-blur-md border-b border-slate-700">
+                        <tr>
+                            <th class="p-3 font-semibold text-center w-12 text-slate-400">#</th>
+                            <th class="p-3 font-semibold">
+                                <div class="flex flex-col gap-1.5">
+                                    <span class="text-slate-300">资产名称</span>
+                                    <input type="text" id="filterAssetName" placeholder="筛选资产..." class="w-full px-2 py-1 bg-slate-900/90 border border-slate-700/80 rounded text-xs text-slate-200 focus:outline-none focus:border-emerald-500">
+                                </div>
+                            </th>
+                            <th class="p-3 font-semibold">
+                                <div class="flex flex-col gap-1.5">
+                                    <span class="text-slate-300">分类</span>
+                                    <select id="filterAssetCategory" class="w-full px-2 py-1 bg-slate-900/90 border border-slate-700/80 rounded text-xs text-slate-200 focus:outline-none focus:border-emerald-500">
+                                        <option value="">全部分类</option>
+                                    </select>
+                                </div>
+                            </th>
+                            <th class="p-3 font-semibold">
+                                <div class="flex flex-col gap-1.5">
+                                    <span class="text-slate-300">所属部门</span>
+                                    <select id="filterAssetDept" class="w-full px-2 py-1 bg-slate-900/90 border border-slate-700/80 rounded text-xs text-slate-200 focus:outline-none focus:border-emerald-500">
+                                        <option value="">全部部门</option>
+                                    </select>
+                                </div>
+                            </th>
+                            <th class="p-3 font-semibold text-right">计划预算(元)</th>
+                            <th class="p-3 font-semibold text-right">实际支出(元)</th>
+                            <th class="p-3 font-semibold text-right">偏差/执行率</th>
+                            <th class="p-3 font-semibold text-center">入固月份</th>
+                            <th class="p-3 font-semibold text-center w-28">
+                                <div class="flex flex-col gap-1.5">
+                                    <span class="text-slate-300">状态</span>
+                                    <select id="filterAssetStatus" class="w-full px-2 py-1 bg-slate-900/90 border border-slate-700/80 rounded text-xs text-slate-200 focus:outline-none focus:border-emerald-500">
+                                        <option value="">全部状态</option>
+                                    </select>
+                                </div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="modalAssetTableBody" class="divide-y divide-slate-800/80 bg-slate-900/40"></tbody>
+                </table>
+            </div>
+            
+            <!-- 弹窗底部操作与统计信息 -->
+            <div class="pt-4 mt-2 flex justify-between items-center text-xs text-slate-400">
+                <div>数据统计：共显示 <span id="modalAssetCount" class="text-emerald-400 font-bold font-mono">0</span> 项</div>
+                <button id="resetAssetFilterBtn" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg border border-slate-700 transition-colors flex items-center gap-1.5">
+                    <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> 重置筛选
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let projectsData = [], planProjectsData = [], assetData = [];
+
+        // 四种状态独立的底色背景与样式配置
+        function getStatusBadge(progress, status) {
+            const s = status || '';
+            if (s.includes('已验收未开票') || progress >= 100) {
+                return { class: 'text-emerald-400 bg-emerald-500/20 border border-emerald-500/30', bar: 'bg-emerald-400', text: '[已验收未开票]' };
+            }
+            if (s.includes('已完工未验收')) {
+                return { class: 'text-cyan-400 bg-cyan-500/20 border border-cyan-500/30', bar: 'bg-cyan-400', text: '[已完工未验收]' };
+            }
+            if (s.includes('已开工未完成') || (progress > 0 && progress < 100)) {
+                return { class: 'text-amber-400 bg-amber-500/20 border border-amber-500/30', bar: 'bg-amber-400', text: s || '[已开工未完成]' };
+            }
+            if (s.includes('未开工未完成') || progress === 0 || !progress) {
+                return { class: 'text-purple-400 bg-purple-500/20 border border-purple-500/30', bar: 'bg-purple-400', text: s || '[未开工未完成]' };
+            }
+            return { class: 'text-slate-400 bg-slate-700/50 border border-slate-600/50', bar: 'bg-slate-500', text: s || '[未开工未完成]' };
+        }
+
+        function getPlanStatusBadge(status) {
+            if (status === '已完成') return 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30';
+            if (status === '已立项') return 'bg-amber-500/20 text-amber-300 border-amber-500/30';
+            return 'bg-blue-500/20 text-blue-300 border-blue-500/30';
+        }
+
+        function renderProjects() {
+            const container = document.getElementById('projectScrollContainer');
+            const buildHtmlGroup = (list) => list.map((item, index) => {
+                const badge = getStatusBadge(item.progress, item.status);
+                return `
+                    <div class="project-item p-2 rounded-lg hover:bg-slate-800/80 transition-colors duration-200 cursor-pointer" data-index="${index}">
+                        <!-- 修改此处：项目名称改为最多显示两行、允许自动换行且不出现省略号 -->
+                        <div class="grid grid-cols-12 gap-1.5 text-xs mb-1.5 items-start pointer-events-none">
+                            <div class="col-span-6 text-slate-200 font-medium line-clamp-2 break-all leading-relaxed" title="${index + 1}. ${item.name}">
+                                ${index + 1}. ${item.name}
+                            </div>
+                            <div class="col-span-3 text-slate-400 font-mono text-center pt-0.5 truncate">
+                                ${item.cost || '--'}
+                            </div>
+                            <div class="col-span-3 text-right pt-0.5 truncate">
+                                <span class="${badge.class} px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold inline-block">${badge.text}</span>
+                            </div>
+                        </div>
+                        <div class="w-full bg-slate-700/60 h-1.5 rounded-full overflow-hidden pointer-events-none">
+                            <div class="${badge.bar} h-full rounded-full" style="width: ${item.progress}%;"></div>
+                        </div>
+                    </div>`;
+            }).join('');
+            container.innerHTML = `<div class="space-y-2.5">${buildHtmlGroup(projectsData)}</div><div class="space-y-2.5 pt-2.5">${buildHtmlGroup(projectsData)}</div>`;
+        }
+
+        function renderPlanProjects() {
+            const container = document.getElementById('planScrollContainer');
+            const buildHtmlGroup = (list) => list.map((item, index) => {
+                const badgeClass = getPlanStatusBadge(item.status);
+                return `
+                    <div class="plan-item p-2.5 rounded-lg bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700/50 flex justify-between items-center cursor-pointer transition-colors" data-index="${index}">
+                        <span class="text-xs text-slate-300 font-medium pointer-events-none">${index + 1}. ${item.name}</span>
+                        <span class="px-2 py-0.5 rounded border text-[10px] ${badgeClass} pointer-events-none">${item.status}</span>
+                    </div>`;
+            }).join('');
+            container.innerHTML = `<div class="space-y-2.5">${buildHtmlGroup(planProjectsData)}</div><div class="space-y-2.5 pt-2.5">${buildHtmlGroup(planProjectsData)}</div>`;
+        }
+
+        function renderAssetTable() {
+            const tbody = document.getElementById('assetTableBody');
+            const buildRowHtml = (item, index) => {
+                const diffClass = String(item.diff).startsWith('+') ? 'text-amber-400' : 'text-emerald-400';
+                const statusBadge = item.status === '正常' ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' : 'bg-amber-500/20 text-amber-300 border-amber-500/30';
+                return `
+                    <tr class="asset-row hover:bg-slate-800/80 transition-colors cursor-pointer flex items-center h-[48px] box-border" data-index="${index}">
+                        <td class="w-[22%] px-4 font-medium text-white flex items-center gap-2 truncate">
+                            <span class="w-2 h-2 rounded-full shrink-0 ${item.status === '正常' ? 'bg-blue-400' : 'bg-amber-400'}"></span>
+                            <span class="truncate">${item.name}</span>
+                        </td>
+                        <td class="w-[12%] px-4 text-slate-400 truncate">${item.category}</td>
+                        <td class="w-[14%] px-4 text-slate-300 truncate">${item.dept}</td>
+                        <td class="w-[14%] px-4 font-mono text-right truncate">${item.budget}</td>
+                        <td class="w-[14%] px-4 font-mono text-right truncate">${item.actual}</td>
+                        <td class="w-[10%] px-4 font-mono text-right truncate ${diffClass}">${item.diff}</td>
+                        <td class="w-[8%] px-4 font-mono text-center text-slate-300 truncate">${item.month}</td>
+                        <td class="w-[6%] px-4 text-center shrink-0"><span class="px-2 py-0.5 text-xs rounded border ${statusBadge}">${item.status}</span></td>
+                    </tr>`;
+            };
+            tbody.innerHTML = assetData.map((item, index) => buildRowHtml(item, index)).join('') + assetData.map((item, index) => buildRowHtml(item, index)).join('');
+        }
+
+        /* ---------------- 施工进度 Modal 逻辑 ---------------- */
+        function initProjectModalLogic() {
+            const modal = document.getElementById('projectModal');
+            const openBtn = document.getElementById('openProjectModalBtn');
+            const closeBtn = document.getElementById('closeProjectModalBtn');
+            const resetBtn = document.getElementById('resetProjectFilterBtn');
+
+            const filterName = document.getElementById('filterProjectName');
+            const filterDept = document.getElementById('filterProjectDept');
+            const filterSupplier = document.getElementById('filterProjectSupplier');
+            const filterManager = document.getElementById('filterProjectManager');
+            const filterCategory = document.getElementById('filterProjectCategory');
+            const filterStatus = document.getElementById('filterProjectStatus');
+
+            openBtn.addEventListener('click', () => {
+                populateProjectFilterDropdowns();
+                applyProjectFilters();
+                modal.classList.remove('hidden');
+            });
+
+            closeBtn.addEventListener('click', () => modal.classList.add('hidden'));
+            modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.add('hidden'); });
+
+            filterName.addEventListener('input', applyProjectFilters);
+            filterDept.addEventListener('change', applyProjectFilters);
+            filterSupplier.addEventListener('input', applyProjectFilters);
+            filterManager.addEventListener('input', applyProjectFilters);
+            filterCategory.addEventListener('change', applyProjectFilters);
+            filterStatus.addEventListener('change', applyProjectFilters);
+
+            resetBtn.addEventListener('click', () => {
+                filterName.value = '';
+                filterDept.value = '';
+                filterSupplier.value = '';
+                filterManager.value = '';
+                filterCategory.value = '';
+                filterStatus.value = '';
+                applyProjectFilters();
+            });
+        }
+
+        function populateProjectFilterDropdowns() {
+            const filterDept = document.getElementById('filterProjectDept');
+            const filterCategory = document.getElementById('filterProjectCategory');
+            const filterStatus = document.getElementById('filterProjectStatus');
+            const depts = [...new Set(projectsData.map(item => item.dept).filter(Boolean))];
+            const categories = [...new Set(projectsData.map(item => item.Categories || item.category).filter(Boolean))];
+            const statuses = [...new Set(projectsData.map(item => item.status || (item.progress >= 100 ? '已完成' : '进行中')).filter(Boolean))];
+
+            filterDept.innerHTML = '<option value="">全部部门</option>' + depts.map(d => `<option value="${d}">${d}</option>`).join('');
+            filterCategory.innerHTML = '<option value="">全部类型</option>' + categories.map(c => `<option value="${c}">${c}</option>`).join('');
+            filterStatus.innerHTML = '<option value="">全部状态</option>' + statuses.map(s => `<option value="${s}">${s}</option>`).join('');
+        }
+
+        function applyProjectFilters() {
+            const nameVal = document.getElementById('filterProjectName').value.trim().toLowerCase();
+            const deptVal = document.getElementById('filterProjectDept').value;
+            const supplierVal = document.getElementById('filterProjectSupplier').value.trim().toLowerCase();
+            const managerVal = document.getElementById('filterProjectManager').value.trim().toLowerCase();
+            const categoryVal = document.getElementById('filterProjectCategory').value;
+            const statusVal = document.getElementById('filterProjectStatus').value;
+
+            const filtered = projectsData.filter((item) => {
+                const itemStatus = item.status || (item.progress >= 100 ? '已完成' : '进行中');
+                const itemCat = item.Categories || item.category || '';
+                return (!nameVal || (item.name && item.name.toLowerCase().includes(nameVal))) &&
+                       (!deptVal || item.dept === deptVal) &&
+                       (!supplierVal || (item.supplier && item.supplier.toLowerCase().includes(supplierVal))) &&
+                       (!managerVal || (item.manager && item.manager.toLowerCase().includes(managerVal))) &&
+                       (!categoryVal || itemCat === categoryVal) &&
+                       (!statusVal || itemStatus === statusVal);
+            });
+            renderModalProjectTable(filtered);
+        }
+
+        function renderModalProjectTable(dataList) {
+            const tbody = document.getElementById('modalProjectTableBody');
+            document.getElementById('modalProjectCount').innerText = dataList.length;
+
+            // 计算筛选后的项目总价加总（支持字符串数字解析，兼容带逗号或单位的情况）
+            let totalCostSum = 0;
+            dataList.forEach(item => {
+                if (item.cost !== undefined && item.cost !== null) {
+                    // 提取数字（如 "1,200.5" 或 "150"）
+                    const num = parseFloat(String(item.cost).replace(/,/g, ''));
+                    if (!isNaN(num)) {
+                        totalCostSum += num;
+                    }
+                }
+            });
+            // 更新底部加总显示（保留两位小数）
+            document.getElementById('modalProjectTotalCost').innerText = totalCostSum.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+            if (dataList.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="10" class="text-center py-8 text-slate-500">未找到符合条件的数据</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = dataList.map((item, idx) => {
+                const badge = getStatusBadge(item.progress, item.status);
+                const startTimeVal = item.progress || item.startTime || item.startDate || '--';
+                return `
+                    <tr class="hover:bg-slate-800/60 transition-colors border-b border-slate-800/50">
+                        <td class="p-3 text-center text-slate-500 font-mono text-xs">${idx + 1}</td>
+                        <td class="p-3 font-medium text-slate-200">${item.name || '--'}</td>
+                        <td class="p-3 text-slate-400">${item.dept || '--'}</td>
+                        <td class="p-3 text-right font-mono text-amber-300 font-medium">${item.cost || '--'}</td>
+                        <td class="p-3 text-slate-300">${item.supplier || '--'}</td>
+                        <td class="p-3 text-slate-300">${item.manager || '--'}</td>
+                        <td class="p-3 text-center font-mono text-xs text-slate-300">${startTimeVal}</td>
+                        <td class="p-3 text-slate-300 font-medium">${item.Categories || item.category || '--'}</td>
+                        <td class="p-3 text-slate-400 italic">${item.Notes || item.remark || item.note || '--'}</td>
+                        <td class="p-3 text-center">
+                            <span class="text-[11px] px-2 py-0.5 rounded font-mono font-medium ${badge.class}">${badge.text}</span>
+                        </td>
+                    </tr>`;
+            }).join('');
+        }
+
+        /* ---------------- 27年规划技改项目 Modal 逻辑 ---------------- */
+        function initPlanModalLogic() {
+            const modal = document.getElementById('planModal');
+            const openBtn = document.getElementById('openPlanModalBtn');
+            const closeBtn = document.getElementById('closePlanModalBtn');
+            const resetBtn = document.getElementById('resetPlanFilterBtn');
+
+            const filterName = document.getElementById('filterPlanName');
+            const filterCategory = document.getElementById('filterPlanCategory');
+            const filterManager = document.getElementById('filterPlanManager');
+            const filterStatus = document.getElementById('filterPlanStatus');
+
+            openBtn.addEventListener('click', () => {
+                populatePlanFilterDropdowns();
+                applyPlanFilters();
+                modal.classList.remove('hidden');
+            });
+
+            closeBtn.addEventListener('click', () => modal.classList.add('hidden'));
+            modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.add('hidden'); });
+
+            filterName.addEventListener('input', applyPlanFilters);
+            filterCategory.addEventListener('change', applyPlanFilters);
+            filterManager.addEventListener('input', applyPlanFilters);
+            filterStatus.addEventListener('change', applyPlanFilters);
+
+            resetBtn.addEventListener('click', () => {
+                filterName.value = '';
+                filterCategory.value = '';
+                filterManager.value = '';
+                filterStatus.value = '';
+                applyPlanFilters();
+            });
+        }
+
+        function populatePlanFilterDropdowns() {
+            const filterCategory = document.getElementById('filterPlanCategory');
+            const filterStatus = document.getElementById('filterPlanStatus');
+            const categories = [...new Set(planProjectsData.map(item => item.category).filter(Boolean))];
+            const statuses = [...new Set(planProjectsData.map(item => item.status).filter(Boolean))];
+
+            filterCategory.innerHTML = '<option value="">全部</option>' + categories.map(c => `<option value="${c}">${c}</option>`).join('');
+            filterStatus.innerHTML = '<option value="">全部</option>' + statuses.map(s => `<option value="${s}">${s}</option>`).join('');
+        }
+
+        function applyPlanFilters() {
+            const nameVal = document.getElementById('filterPlanName').value.trim().toLowerCase();
+            const categoryVal = document.getElementById('filterPlanCategory').value;
+            const managerVal = document.getElementById('filterPlanManager').value.trim().toLowerCase();
+            const statusVal = document.getElementById('filterPlanStatus').value;
+
+            const filtered = planProjectsData.filter((item) => {
+                return (!nameVal || (item.name && item.name.toLowerCase().includes(nameVal))) &&
+                       (!categoryVal || item.category === categoryVal) &&
+                       (!managerVal || (item.manager && item.manager.toLowerCase().includes(managerVal))) &&
+                       (!statusVal || item.status === statusVal);
+            });
+            renderModalPlanTable(filtered);
+        }
+
+        function renderModalPlanTable(dataList) {
+            const tbody = document.getElementById('modalPlanTableBody');
+            document.getElementById('modalPlanCount').innerText = dataList.length;
+
+            if (dataList.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="10" class="text-center py-8 text-slate-500">未找到符合条件的数据</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = dataList.map((item, idx) => {
+                const badgeClass = getPlanStatusBadge(item.status);
+                return `
+                    <tr class="hover:bg-slate-800/60 transition-colors border-b border-slate-800/50">
+                        <td class="p-2.5 text-center text-slate-500 font-mono text-xs">${idx + 1}</td>
+                        <td class="p-2.5 font-medium text-slate-200" title="${item.name || ''}">${item.name || '--'}</td>
+                        <td class="p-2.5 text-slate-400"><span class="bg-slate-800 px-1 py-0.5 rounded border border-slate-700 text-[11px]">${item.category || '--'}</span></td>
+                        <td class="p-2.5 text-slate-300 text-[11px] leading-relaxed" title="${item.currentStatus || ''}">${item.currentStatus || '--'}</td>
+                        <td class="p-2.5 text-slate-300 text-[11px] leading-relaxed" title="${item.improvement || ''}">${item.improvement || '--'}</td>
+                        <td class="p-2.5 text-right font-mono text-amber-300 text-xs">${item.cost || '--'}</td>
+                        <td class="p-2.5 text-right font-mono text-emerald-400 text-xs">${item.benefit || '--'}</td>
+                        <td class="p-2.5 text-center font-mono text-[11px] text-slate-300">${item.endTime || '--'}</td>
+                        <td class="p-2.5 text-indigo-300 font-medium text-xs" title="${item.manager || ''}">${item.manager || '--'}</td>
+                        <td class="p-2.5 text-center">
+                            <span class="text-[10px] px-1.5 py-0.5 rounded border font-mono font-medium ${badgeClass}">${item.status || '--'}</span>
+                        </td>
+                    </tr>`;
+            }).join('');
+        }
+
+        /* ---------------- 资产支出明细数据表 Modal 逻辑 ---------------- */
+        function initAssetModalLogic() {
+            const modal = document.getElementById('assetModal');
+            const openBtn = document.getElementById('openAssetModalBtn');
+            const closeBtn = document.getElementById('closeAssetModalBtn');
+            const resetBtn = document.getElementById('resetAssetFilterBtn');
+
+            const filterName = document.getElementById('filterAssetName');
+            const filterCategory = document.getElementById('filterAssetCategory');
+            const filterDept = document.getElementById('filterAssetDept');
+            const filterStatus = document.getElementById('filterAssetStatus');
+
+            openBtn.addEventListener('click', () => {
+                populateAssetFilterDropdowns();
+                applyAssetFilters();
+                modal.classList.remove('hidden');
+            });
+
+            closeBtn.addEventListener('click', () => modal.classList.add('hidden'));
+            modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.add('hidden'); });
+
+            filterName.addEventListener('input', applyAssetFilters);
+            filterCategory.addEventListener('change', applyAssetFilters);
+            filterDept.addEventListener('change', applyAssetFilters);
+            filterStatus.addEventListener('change', applyAssetFilters);
+
+            resetBtn.addEventListener('click', () => {
+                filterName.value = '';
+                filterCategory.value = '';
+                filterDept.value = '';
+                filterStatus.value = '';
+                applyAssetFilters();
+            });
+        }
+
+        function populateAssetFilterDropdowns() {
+            const filterCategory = document.getElementById('filterAssetCategory');
+            const filterDept = document.getElementById('filterAssetDept');
+            const filterStatus = document.getElementById('filterAssetStatus');
+            const categories = [...new Set(assetData.map(item => item.category).filter(Boolean))];
+            const depts = [...new Set(assetData.map(item => item.dept).filter(Boolean))];
+            const statuses = [...new Set(assetData.map(item => item.status).filter(Boolean))];
+
+            filterCategory.innerHTML = '<option value="">全部分类</option>' + categories.map(c => `<option value="${c}">${c}</option>`).join('');
+            filterDept.innerHTML = '<option value="">全部部门</option>' + depts.map(d => `<option value="${d}">${d}</option>`).join('');
+            filterStatus.innerHTML = '<option value="">全部状态</option>' + statuses.map(s => `<option value="${s}">${s}</option>`).join('');
+        }
+
+        function applyAssetFilters() {
+            const nameVal = document.getElementById('filterAssetName').value.trim().toLowerCase();
+            const categoryVal = document.getElementById('filterAssetCategory').value;
+            const deptVal = document.getElementById('filterAssetDept').value;
+            const statusVal = document.getElementById('filterAssetStatus').value;
+
+            const filtered = assetData.filter((item) => {
+                return (!nameVal || (item.name && item.name.toLowerCase().includes(nameVal))) &&
+                       (!categoryVal || item.category === categoryVal) &&
+                       (!deptVal || item.dept === deptVal) &&
+                       (!statusVal || item.status === statusVal);
+            });
+            renderModalAssetTable(filtered);
+        }
+
+        function renderModalAssetTable(dataList) {
+            const tbody = document.getElementById('modalAssetTableBody');
+            document.getElementById('modalAssetCount').innerText = dataList.length;
+
+            if (dataList.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="9" class="text-center py-8 text-slate-500">未找到符合条件的数据</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = dataList.map((item, idx) => {
+                const diffClass = String(item.diff).startsWith('+') ? 'text-amber-400' : 'text-emerald-400';
+                const statusBadge = item.status === '正常' ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' : 'bg-amber-500/20 text-amber-300 border-amber-500/30';
+                return `
+                    <tr class="hover:bg-slate-800/60 transition-colors border-b border-slate-800/50">
+                        <td class="p-3 text-center text-slate-500 font-mono text-xs">${idx + 1}</td>
+                        <td class="p-3 font-medium text-slate-200 flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full shrink-0 ${item.status === '正常' ? 'bg-blue-400' : 'bg-amber-400'}"></span>
+                            <span>${item.name || '--'}</span>
+                        </td>
+                        <td class="p-3 text-slate-400"><span class="bg-slate-800 px-1.5 py-0.5 rounded border border-slate-700 text-xs">${item.category || '--'}</span></td>
+                        <td class="p-3 text-slate-300">${item.dept || '--'}</td>
+                        <td class="p-3 text-right font-mono text-blue-300 font-medium">${item.budget || '--'}</td>
+                        <td class="p-3 text-right font-mono text-amber-300 font-medium">${item.actual || '--'}</td>
+                        <td class="p-3 text-right font-mono font-bold ${diffClass}">${item.diff || '--'}</td>
+                        <td class="p-3 text-center font-mono text-slate-300">${item.month || '--'}</td>
+                        <td class="p-3 text-center">
+                            <span class="text-[11px] px-2 py-0.5 rounded border font-mono font-medium ${statusBadge}">${item.status || '--'}</span>
+                        </td>
+                    </tr>`;
+            }).join('');
+        }
+
+        function setupDelegatedTooltip(containerId, itemClass, tooltipId, updateCallback) {
+            const container = document.getElementById(containerId);
+            const tooltip = document.getElementById(tooltipId);
+            let hideTimer = null, currentItem = null;
+
+            container.addEventListener('mouseover', (e) => {
+                const item = e.target.closest(itemClass);
+                if (!item) return;
+                if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; }
+                if (currentItem !== item) {
+                    currentItem = item;
+                    updateCallback(item.getAttribute('data-index'));
+                    tooltip.classList.remove('hidden');
+                    void tooltip.offsetWidth;
+                    tooltip.classList.add('opacity-100');
+                }
+            });
+
+            container.addEventListener('mousemove', (e) => {
+                if (!currentItem) return;
+                const x = e.clientX + 15, y = e.clientY + 15;
+                const tw = tooltip.offsetWidth || 320, th = tooltip.offsetHeight || 260;
+                tooltip.style.left = `${(x + tw > window.innerWidth) ? e.clientX - tw - 15 : x}px`;
+                tooltip.style.top = `${(y + th > window.innerHeight) ? e.clientY - th - 15 : y}px`;
+            });
+
+            container.addEventListener('mouseout', (e) => {
+                const related = e.relatedTarget, item = e.target.closest(itemClass);
+                if (item && (!related || !item.contains(related))) {
+                    currentItem = null;
+                    hideTimer = setTimeout(() => {
+                        tooltip.classList.remove('opacity-100');
+                        setTimeout(() => tooltip.classList.add('hidden'), 150);
+                    }, 100);
+                }
+            });
+        }
+
+        function renderHeaderAndKPI(data) {
+            if (data.header && data.header.title) {
+                document.title = data.header.title;
+                document.getElementById('pageTitle').innerText = data.header.title;
+                document.getElementById('headerTitle').innerText = data.header.title;
+            }
+            document.getElementById('headerSubtitle').innerText = data.header?.subtitle || '';
+            
+            const today = new Date();
+            document.getElementById('headerDate').innerText = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+            document.getElementById('headerUser').innerText = data.header?.user || '';
+
+            document.getElementById('kpiTotalBudget').innerText = data.kpi?.totalBudget || '0';
+            document.getElementById('kpiTotalBudgetUnit').innerText = data.kpi?.totalBudgetUnit || '亿元';
+            document.getElementById('kpiActualSpend').innerText = data.kpi?.actualSpend || '0';
+            document.getElementById('kpiActualSpendUnit').innerText = data.kpi?.actualSpendUnit || '亿元';
+            document.getElementById('kpiExecutionRate').innerText = `执行率 ${data.kpi?.executionRate || '0%'}`;
+
+            const overallProg = Number(data.kpi?.overallProgress) || 0;
+            document.getElementById('overallProgressText').innerText = `${overallProg.toFixed(1)}%`;
+            document.getElementById('overallProgressBar').style.width = `${overallProg}%`;
+
+            document.getElementById('kpiWarningStatus').innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span> ${data.kpi?.warningStatus || '暂无状态'}`;
+            document.getElementById('kpiWarningSubtext').innerText = data.kpi?.warningSubtext || '';
+        }
+
+        function renderChart(chartData) {
+            const ctx = document.getElementById('budgetChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: chartData.labels || [],
+                    datasets: [
+                        { label: '预算 (万元)', data: chartData.budgets || [], backgroundColor: '#3b82f6', borderRadius: 4, barPercentage: 0.6 },
+                        { label: '实际使用 (万元)', data: chartData.actuals || [], backgroundColor: '#f97316', borderRadius: 4, barPercentage: 0.6 }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { labels: { color: '#94a3b8' } } },
+                    scales: {
+                        x: { ticks: { color: '#94a3b8' }, grid: { display: false } },
+                        y: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(51, 65, 85, 0.4)' } }
+                    }
+                }
+            });
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const data = window.dashboardData;
+            if (!data) {
+                alert("未检测到 data.js 文件，请检查 data.js 是否与 index.html 放在同一目录下！");
+                return;
+            }
+
+            projectsData = data.projectsData || [];
+            planProjectsData = data.planProjectsData || [];
+            assetData = data.assetData || [];
+
+            renderHeaderAndKPI(data);
+            renderProjects();
+            renderPlanProjects();
+            renderAssetTable();
+            renderChart(data.chart || {});
+
+            // 初始化弹窗逻辑
+            initProjectModalLogic();
+            initPlanModalLogic();
+            initAssetModalLogic();
+
+            if (window.lucide) lucide.createIcons();
+
+            setupDelegatedTooltip('projectScrollContainer', '.project-item', 'projectTooltip', (index) => {
+                const item = projectsData[index]; if (!item) return;
+                const badge = getStatusBadge(item.progress, item.status);
+                document.getElementById('ttName').innerText = `${Number(index) + 1}. ${item.name}`;
+                document.getElementById('ttStatus').innerText = badge.text;
+                document.getElementById('ttStatus').className = `text-[11px] px-2 py-0.5 rounded font-mono font-medium ${badge.class}`;
+                document.getElementById('ttDept').innerText = item.dept;
+                document.getElementById('ttCost').innerText = item.cost;
+                document.getElementById('ttSupplier').innerText = item.supplier;
+                document.getElementById('ttManager').innerText = item.manager;
+                document.getElementById('ttCategories').innerText = item.Categories || item.category || '--';
+                document.getElementById('ttNotes').innerText = item.Notes || item.remark || item.note || '--';
+            });
+
+            setupDelegatedTooltip('planScrollContainer', '.plan-item', 'planTooltip', (index) => {
+                const item = planProjectsData[index]; if (!item) return;
+                document.getElementById('planTtName').innerText = `${Number(index) + 1}. ${item.name}`;
+                document.getElementById('planTtCategory').innerText = item.category;
+                document.getElementById('planTtStatus').innerText = item.status;
+                document.getElementById('planTtStatus').className = `text-[11px] px-2 py-0.5 rounded border font-mono font-medium ${getPlanStatusBadge(item.status)}`;
+                document.getElementById('planTtCurrent').innerText = item.currentStatus;
+                document.getElementById('planTtImprovement').innerText = item.improvement;
+                document.getElementById('planTtCost').innerText = `¥ ${item.cost} 万元`;
+                document.getElementById('planTtBenefit').innerText = `¥ ${item.benefit} 万元/年`;
+                document.getElementById('planTtEndTime').innerText = item.endTime;
+                document.getElementById('planTtManager').innerText = item.manager;
+                document.getElementById('planTtProgressDesc').innerText = item.progressDesc;
+            });
+
+            setupDelegatedTooltip('assetTableBody', '.asset-row', 'assetTooltip', (index) => {
+                const item = assetData[index]; if (!item) return;
+                document.getElementById('assetTtName').innerText = item.name;
+                document.getElementById('assetTtCategory').innerText = item.category;
+                document.getElementById('assetTtDept').innerText = item.dept;
+                document.getElementById('assetTtMonth').innerText = item.month;
+                document.getElementById('assetTtBudget').innerText = `¥ ${item.budget}`;
+                document.getElementById('assetTtActual').innerText = `¥ ${item.actual}`;
+                document.getElementById('assetTtDiff').innerText = item.diff;
+                document.getElementById('assetTtDiff').className = `font-mono font-bold ${String(item.diff).startsWith('+') ? 'text-amber-400' : 'text-emerald-400'}`;
+                document.getElementById('assetTtStatus').innerText = item.status;
+                document.getElementById('assetTtStatus').className = `text-[11px] px-2 py-0.5 rounded border font-mono font-medium ${item.status === '正常' ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' : 'bg-amber-500/20 text-amber-300 border-amber-500/30'}`;
+            });
+        });
+    </script>
+</body>
+</html>

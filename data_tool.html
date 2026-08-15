@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>看板数据 ↔ Excel 交互转换工具</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入 SheetJS 处理 Excel -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen p-8 font-sans">
+    <div class="max-w-4xl mx-auto space-y-6">
+        
+        <header class="border-b border-slate-700 pb-4">
+            <h1 class="text-2xl font-bold text-cyan-400">📊 资金预算看板 - 数据与 Excel 转换工具</h1>
+            <p class="text-sm text-slate-400 mt-1">方便通过 Excel 修改看板数据，并在数据格式间轻松转换（严格按表头对应解析）</p>
+        </header>
+
+        <!-- 操作区 1：导入 DATA 文件并导出 Excel -->
+        <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-lg">
+            <h2 class="text-lg font-semibold text-white mb-2">1. 导入 data.js 文件并导出为 Excel 表格</h2>
+            <p class="text-xs text-slate-400 mb-4">选择你目前的 `data.js` 文件，系统将其解析并导出为包含多个页签（基本信息、施工进度、规划项目、资产明细等）的 `.xlsx` 表格。</p>
+            
+            <div class="flex items-center gap-4">
+                <input type="file" id="jsFileInput" accept=".js" class="block w-full text-sm text-slate-400 file:mr-4 file:py-2.5 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-emerald-600 file:text-white hover:file:bg-emerald-500 cursor-pointer"/>
+                <button onclick="processJSToExcel()" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 font-medium rounded-lg text-white transition-colors whitespace-nowrap flex items-center gap-1.5">
+                    📥 导出为 Excel 文件
+                </button>
+            </div>
+        </div>
+
+        <!-- 操作区 2：上传修改后的 Excel 并生成 JS -->
+        <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-lg">
+            <h2 class="text-lg font-semibold text-white mb-2">2. 上传修改后的 Excel 表格</h2>
+            <p class="text-xs text-slate-400 mb-4">选择你在 Excel 中修改好的文件，系统将根据实际表头直接生成看板所需的 `data.js` 文件。</p>
+            
+            <div class="flex items-center gap-4">
+                <input type="file" id="excelFileInput" accept=".xlsx, .xls" class="block w-full text-sm text-slate-400 file:mr-4 file:py-2.5 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-cyan-600 file:text-white hover:file:bg-cyan-500 cursor-pointer"/>
+                <button onclick="processExcelToJS()" class="px-5 py-2.5 bg-cyan-600 hover:bg-cyan-500 font-medium rounded-lg text-white transition-colors whitespace-nowrap">
+                    🔄 解析 Excel 并生成 data.js
+                </button>
+            </div>
+        </div>
+
+        <!-- 输出预览区 -->
+        <div id="outputArea" class="hidden bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-lg space-y-4">
+            <div class="flex justify-between items-center">
+                <h3 class="text-md font-semibold text-cyan-300">🎉 生成成功！数据预览如下：</h3>
+                <div class="flex items-center gap-2">
+                    <button id="copyBtn" onclick="copyJSCode()" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-xs font-bold rounded text-white transition-colors flex items-center gap-1">
+                        📋 复制 DATA 代码
+                    </button>
+                    <button onclick="downloadJSFile()" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-xs font-bold rounded text-white transition-colors flex items-center gap-1">
+                        💾 下载 data.js 文件
+                    </button>
+                </div>
+            </div>
+            <textarea id="jsonPreview" class="w-full h-64 bg-slate-950 border border-slate-700 rounded-lg p-3 font-mono text-xs text-emerald-400 custom-scrollbar" readonly></textarea>
+        </div>
+
+    </div>
+
+    <script>
+        let generatedJSResult = "";
+
+        // 辅助函数：把 Excel 误转成数字的日期序列号转回 YYYY-MM-DD 格式
+        function parseExcelDate(val) {
+            if (typeof val === 'number' && val > 30000 && val < 60000) {
+                const utc_days = Math.floor(val - 25569);
+                const utc_value = utc_days * 86400;
+                const date_info = new Date(utc_value * 1000);
+                const year = date_info.getUTCFullYear();
+                const month = String(date_info.getUTCMonth() + 1).padStart(2, '0');
+                const day = String(date_info.getUTCDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            }
+            return val !== undefined && val !== null ? String(val).trim() : "";
+        }
+
+        // 清洗对象：严格按表头对应解析，仅对日期等格式做常规处理，不额外增补字段
+        function cleanAndMapItem(item) {
+            if (!item || typeof item !== 'object') return item;
+            
+            const cleaned = {};
+            for (let key in item) {
+                if (item.hasOwnProperty(key)) {
+                    let val = item[key];
+                    let cleanKey = key.trim();
+
+                    // 统一处理日期相关字段
+                    if (cleanKey.toLowerCase().includes('date') || cleanKey.includes('日期') || cleanKey.includes('时间') || cleanKey.includes('工期')) {
+                        val = parseExcelDate(val);
+                    }
+
+                    cleaned[cleanKey] = (typeof val === 'object') ? cleanAndMapItem(val) : val;
+                }
+            }
+            return cleaned;
+        }
+
+        // 1. 读取导入的 data.js 并生成 Excel
+        function processJSToExcel() {
+            const jsInput = document.getElementById('jsFileInput');
+            if (!jsInput.files.length) {
+                alert("请先选择要导入的 data.js 文件！");
+                return;
+            }
+
+            const file = jsInput.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                try {
+                    const text = e.target.result;
+                    const jsonMatch = text.match(/window\.dashboardData\s*=\s*(\{[\s\S]*\});?/);
+                    
+                    if (!jsonMatch || !jsonMatch[1]) {
+                        throw new Error("文件内容不符合 window.dashboardData 数据结构规范！");
+                    }
+
+                    const targetData = JSON.parse(jsonMatch[1]);
+                    exportDataToExcel(targetData);
+                } catch (err) {
+                    alert("解析 data.js 失败： " + err.message);
+                }
+            };
+
+            reader.readAsText(file);
+        }
+
+        // 构建 Excel 工作簿结构并下载
+        function exportDataToExcel(data) {
+            const wb = XLSX.utils.book_new();
+
+            const basicRows = [
+                ["类型", "键名", "数值/内容"],
+                ["Header", "title", data.header?.title || ""],
+                ["Header", "subtitle", data.header?.subtitle || ""],
+                ["Header", "date", data.header?.date || ""],
+                ["Header", "user", data.header?.user || ""],
+                ["KPI", "totalBudget", data.kpi?.totalBudget || ""],
+                ["KPI", "totalBudgetUnit", data.kpi?.totalBudgetUnit || ""],
+                ["KPI", "actualSpend", data.kpi?.actualSpend || ""],
+                ["KPI", "actualSpendUnit", data.kpi?.actualSpendUnit || ""],
+                ["KPI", "executionRate", data.kpi?.executionRate || ""],
+                ["KPI", "overallProgress", data.kpi?.overallProgress || 0],
+                ["KPI", "warningStatus", data.kpi?.warningStatus || ""],
+                ["KPI", "warningSubtext", data.kpi?.warningSubtext || ""]
+            ];
+            const wsBasic = XLSX.utils.aoa_to_sheet(basicRows);
+            XLSX.utils.book_append_sheet(wb, wsBasic, "基本信息与KPI");
+
+            const chartRows = [["分类名称", "预算(万元)", "实际支出(万元)"]];
+            if (data.chart && data.chart.labels) {
+                for(let i = 0; i < data.chart.labels.length; i++){
+                    chartRows.push([
+                        data.chart.labels[i] || "",
+                        data.chart.budgets[i] || 0,
+                        data.chart.actuals[i] || 0
+                    ]);
+                }
+            }
+            const wsChart = XLSX.utils.aoa_to_sheet(chartRows);
+            XLSX.utils.book_append_sheet(wb, wsChart, "图表数据");
+
+            function createTextSheet(jsonData) {
+                const ws = XLSX.utils.json_to_sheet(jsonData);
+                const range = XLSX.utils.decode_range(ws['!ref'] || "A1");
+                for (let R = range.s.r; R <= range.e.r; ++R) {
+                    for (let C = range.s.c; C <= range.e.c; ++C) {
+                        const cell_ref = XLSX.utils.encode_cell({c: C, r: R});
+                        if (ws[cell_ref]) ws[cell_ref].z = '@';
+                    }
+                }
+                return ws;
+            }
+
+            XLSX.utils.book_append_sheet(wb, createTextSheet(data.projectsData || []), "施工进度项目");
+            XLSX.utils.book_append_sheet(wb, createTextSheet(data.planProjectsData || []), "27年规划项目");
+            XLSX.utils.book_append_sheet(wb, createTextSheet(data.assetData || []), "资产明细数据");
+
+            XLSX.writeFile(wb, "看板数据.xlsx");
+        }
+
+        // 2. 读取 Excel 并转为 data.js
+        function processExcelToJS() {
+            const fileInput = document.getElementById('excelFileInput');
+            if (!fileInput.files.length) {
+                alert("请先选择要上传的 Excel 文件！");
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, {type: 'array', cellDates: false});
+
+                try {
+                    const resultData = {
+                        header: {},
+                        kpi: {},
+                        chart: { labels: [], budgets: [], actuals: [] },
+                        projectsData: [],
+                        planProjectsData: [],
+                        assetData: []
+                    };
+
+                    const wsBasic = workbook.Sheets["基本信息与KPI"];
+                    if(wsBasic) {
+                        const basicRows = XLSX.utils.sheet_to_json(wsBasic, {header: 1});
+                        basicRows.slice(1).forEach(row => {
+                            if(row[0] === "Header") {
+                                let val = row[2];
+                                if(row[1] === 'date') val = parseExcelDate(val);
+                                resultData.header[row[1]] = String(val || '');
+                            }
+                            if(row[0] === "KPI") {
+                                resultData.kpi[row[1]] = (row[1] === "overallProgress") ? Number(row[2]) : String(row[2] || '');
+                            }
+                        });
+                    }
+
+                    const wsChart = workbook.Sheets["图表数据"];
+                    if(wsChart) {
+                        const chartRows = XLSX.utils.sheet_to_json(wsChart, {header: 1});
+                        chartRows.slice(1).forEach(row => {
+                            if(row[0]) {
+                                resultData.chart.labels.push(String(row[0]));
+                                resultData.chart.budgets.push(Number(row[1]) || 0);
+                                resultData.chart.actuals.push(Number(row[2]) || 0);
+                            }
+                        });
+                    }
+
+                    const parseSheetList = (sheetName) => {
+                        const ws = workbook.Sheets[sheetName];
+                        if (!ws) return [];
+                        const rawJson = XLSX.utils.sheet_to_json(ws, {raw: false});
+                        return rawJson.map(item => cleanAndMapItem(item));
+                    };
+
+                    resultData.projectsData = parseSheetList("施工进度项目");
+                    resultData.planProjectsData = parseSheetList("27年规划项目");
+                    resultData.assetData = parseSheetList("资产明细数据");
+
+                    generatedJSResult = `window.dashboardData = ${JSON.stringify(resultData, null, 2)};`;
+
+                    document.getElementById('outputArea').classList.remove('hidden');
+                    document.getElementById('jsonPreview').value = generatedJSResult;
+
+                } catch (err) {
+                    alert("解析 Excel 失败，请确保格式正确！错误信息: " + err.message);
+                }
+            };
+
+            reader.readAsArrayBuffer(file);
+        }
+
+        function copyJSCode() {
+            if (!generatedJSResult) return;
+            navigator.clipboard.writeText(generatedJSResult).then(() => {
+                const copyBtn = document.getElementById('copyBtn');
+                const originalText = copyBtn.innerHTML;
+                copyBtn.innerHTML = '✅ 已复制到剪贴板！';
+                copyBtn.classList.replace('bg-slate-700', 'bg-emerald-600');
+                setTimeout(() => {
+                    copyBtn.innerHTML = originalText;
+                    copyBtn.classList.replace('bg-emerald-600', 'bg-slate-700');
+                }, 2000);
+            }).catch(err => {
+                alert("复制失败，请手动选择文本进行复制");
+            });
+        }
+
+        function downloadJSFile() {
+            if(!generatedJSResult) return;
+            const blob = new Blob([generatedJSResult], { type: "application/javascript;charset=utf-8" });
+            const a = document.createElement("a");
+            a.href = URL.createObjectURL(blob);
+            a.download = "data.js";
+            a.click();
+        }
+    </script>
+</body>
+</html>
