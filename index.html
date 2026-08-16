@@ -15,22 +15,38 @@
     <script src="data.js?v=1.0"></script>
 
     <style>
-        body { background-color: #0f172a; color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-        .glass-panel { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(51, 65, 85, 0.6); transition: border-color 0.3s ease, box-shadow 0.3s ease; }
-        .glass-panel:hover { border-color: rgba(6, 182, 212, 0.7); box-shadow: 0 0 20px rgba(6, 182, 212, 0.2); }
+        body { background-color: #090d16; color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        
+        /* 多彩独立图框背景样式 */
+        .panel-emerald { background: linear-gradient(135deg, rgba(6, 95, 70, 0.4) 0%, rgba(15, 23, 42, 0.8) 100%); backdrop-filter: blur(12px); border: 1px solid rgba(52, 211, 153, 0.4); box-shadow: 0 8px 32px 0 rgba(4, 120, 87, 0.15); transition: all 0.3s ease; }
+        .panel-emerald:hover { border-color: rgba(52, 211, 153, 0.8); box-shadow: 0 0 25px rgba(52, 211, 153, 0.3); }
+
+        .panel-cyan { background: linear-gradient(135deg, rgba(14, 116, 144, 0.4) 0%, rgba(15, 23, 42, 0.8) 100%); backdrop-filter: blur(12px); border: 1px solid rgba(34, 211, 238, 0.4); box-shadow: 0 8px 32px 0 rgba(8, 145, 178, 0.15); transition: all 0.3s ease; }
+        .panel-cyan:hover { border-color: rgba(34, 211, 238, 0.8); box-shadow: 0 0 25px rgba(34, 211, 238, 0.3); }
+
+        .panel-indigo { background: linear-gradient(135deg, rgba(67, 56, 202, 0.35) 0%, rgba(15, 23, 42, 0.8) 100%); backdrop-filter: blur(12px); border: 1px solid rgba(129, 140, 248, 0.4); box-shadow: 0 8px 32px 0 rgba(79, 70, 229, 0.15); transition: all 0.3s ease; }
+        .panel-indigo:hover { border-color: rgba(129, 140, 248, 0.8); box-shadow: 0 0 25px rgba(129, 140, 248, 0.3); }
+
+        .panel-amber { background: linear-gradient(135deg, rgba(180, 83, 9, 0.35) 0%, rgba(15, 23, 42, 0.8) 100%); backdrop-filter: blur(12px); border: 1px solid rgba(251, 191, 36, 0.4); box-shadow: 0 8px 32px 0 rgba(217, 119, 6, 0.15); transition: all 0.3s ease; }
+        .panel-amber:hover { border-color: rgba(251, 191, 36, 0.8); box-shadow: 0 0 25px rgba(251, 191, 36, 0.3); }
+
+        .panel-slate { background: linear-gradient(135deg, rgba(30, 41, 59, 0.75) 0%, rgba(15, 23, 42, 0.9) 100%); backdrop-filter: blur(12px); border: 1px solid rgba(148, 163, 184, 0.25); box-shadow: 0 8px 32px 0 rgba(15, 23, 42, 0.3); transition: all 0.3s ease; }
+        .panel-slate:hover { border-color: rgba(56, 189, 248, 0.6); box-shadow: 0 0 20px rgba(56, 189, 248, 0.2); }
+
+        /* 通用玻璃面板备用 */
+        .glass-panel { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(51, 65, 85, 0.6); }
+
         .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
         
         @keyframes auroraFlow { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
         .aurora-bottom-bar { position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #3b82f6, #06b6d4, #a855f7, #10b981, #3b82f6); background-size: 300% 100%; animation: auroraFlow 150s linear infinite; border-bottom-left-radius: 0.75rem; border-bottom-right-radius: 0.75rem; }
         
-        /* 侧边小卡片自动无缝滚动动画 */
         @keyframes autoScrollUp { 0% { transform: translateY(0); } 100% { transform: translateY(-50%); } }
         .scroll-wrapper { position: relative; height: 250px; overflow: hidden; }
         .scroll-inner { display: flex; flex-direction: column; animation: autoScrollUp 150s linear infinite; }
         .scroll-wrapper:hover .scroll-inner { animation-play-state: paused; }
         
-        /* 表格 5 行平滑滚动动画 */
         @keyframes tableAutoScroll { 0% { transform: translateY(0); } 100% { transform: translateY(-50%); } }
         .table-scroll-wrapper { position: relative; height: 240px; overflow: hidden; } 
         .table-scroll-inner { animation: tableAutoScroll 220s linear infinite; }
@@ -42,7 +58,7 @@
 <body class="min-h-screen p-4 md:p-6 custom-scrollbar relative">
 
     <!-- Tooltips -->
-    <div id="projectTooltip" class="custom-tooltip fixed hidden opacity-0 glass-panel rounded-xl p-4 w-72 shadow-2xl border border-cyan-500/40 bg-slate-900/95 backdrop-blur-md">
+    <div id="projectTooltip" class="custom-tooltip fixed hidden opacity-0 panel-cyan rounded-xl p-4 w-72 shadow-2xl bg-slate-900/95 backdrop-blur-md">
         <div class="flex justify-between items-start mb-2.5 pb-2 border-b border-slate-700/80">
             <h4 id="ttName" class="font-bold text-sm text-cyan-300">项目名称</h4>
             <span id="ttStatus" class="text-[11px] px-2 py-0.5 rounded font-mono font-medium">状态</span>
@@ -57,7 +73,7 @@
          </div>
     </div>
 
-    <div id="planTooltip" class="custom-tooltip fixed hidden opacity-0 glass-panel rounded-xl p-4 w-80 shadow-2xl border border-indigo-500/40 bg-slate-900/95 backdrop-blur-md">
+    <div id="planTooltip" class="custom-tooltip fixed hidden opacity-0 panel-indigo rounded-xl p-4 w-80 shadow-2xl bg-slate-900/95 backdrop-blur-md">
         <div class="flex justify-between items-start mb-2.5 pb-2 border-b border-slate-700/80">
             <div>
                 <h4 id="planTtName" class="font-bold text-sm text-indigo-300">技改项目名称</h4>
@@ -80,7 +96,7 @@
         </div>
     </div>
 
-    <div id="assetTooltip" class="custom-tooltip fixed hidden opacity-0 glass-panel rounded-xl p-4 w-80 shadow-2xl border border-emerald-500/40 bg-slate-900/95 backdrop-blur-md">
+    <div id="assetTooltip" class="custom-tooltip fixed hidden opacity-0 panel-emerald rounded-xl p-4 w-80 shadow-2xl bg-slate-900/95 backdrop-blur-md">
         <div class="flex justify-between items-start mb-2.5 pb-2 border-b border-slate-700/80">
             <div>
                 <h4 id="assetTtName" class="font-bold text-sm text-emerald-300">资产名称</h4>
@@ -101,77 +117,82 @@
         </div>
     </div>
 
-    <!-- Header -->
-    <header class="glass-panel rounded-xl p-4 mb-6 flex flex-col md:flex-row justify-between items-center gap-4 shadow-xl relative overflow-hidden">
+    <!-- Header (使用蓝紫极光色) -->
+    <header class="panel-indigo rounded-xl p-4 mb-6 flex flex-col md:flex-row justify-between items-center gap-4 shadow-xl relative overflow-hidden">
         <div class="flex items-center gap-3.5 z-10">
-            <div class="p-2.5 bg-slate-800/90 rounded-xl border border-cyan-500/40 text-cyan-400"><i data-lucide="building-2" class="w-6 h-6"></i></div>
+            <div class="p-2.5 bg-slate-800/90 rounded-xl border border-indigo-500/40 text-indigo-400"><i data-lucide="building-2" class="w-6 h-6"></i></div>
             <div>
                 <h1 id="headerTitle" class="text-xl md:text-2xl font-bold tracking-wide text-white flex items-center gap-2">--</h1>
-                <p id="headerSubtitle" class="text-xs text-slate-400 mt-0.5">--</p>
+                <p id="headerSubtitle" class="text-xs text-slate-300 mt-0.5">--</p>
             </div>
         </div>
 
         <div class="flex items-center gap-4 text-sm text-slate-300 z-10">
-            <div class="flex items-center gap-2 bg-slate-800/80 px-3 py-1.5 rounded-lg border border-slate-700/80"><i data-lucide="calendar" class="w-4 h-4 text-cyan-400"></i><span id="headerDate" class="font-mono">--</span></div>
-            <div class="flex items-center gap-2 bg-slate-800/80 px-3 py-1.5 rounded-lg border border-slate-700/80"><i data-lucide="user-check" class="w-4 h-4 text-emerald-400"></i><span id="headerUser">--</span></div>
+            <div class="flex items-center gap-2 bg-slate-900/80 px-3 py-1.5 rounded-lg border border-indigo-500/30"><i data-lucide="calendar" class="w-4 h-4 text-indigo-400"></i><span id="headerDate" class="font-mono">--</span></div>
+            <div class="flex items-center gap-2 bg-slate-900/80 px-3 py-1.5 rounded-lg border border-indigo-500/30"><i data-lucide="user-check" class="w-4 h-4 text-emerald-400"></i><span id="headerUser">--</span></div>
         </div>
         <div class="aurora-bottom-bar"></div>
     </header>
 
-    <!-- KPI -->
+    <!-- KPI 区域 (四个卡片采用不同色彩背景区分) -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <div class="glass-panel p-5 rounded-xl flex items-center justify-between relative overflow-hidden group">
+        <!-- 蓝调卡片 -->
+        <div class="panel-cyan p-5 rounded-xl flex items-center justify-between relative overflow-hidden group">
             <div>
-                <p class="text-sm font-medium text-slate-400 flex items-center gap-1.5"><i data-lucide="wallet" class="w-4 h-4 text-blue-400"></i> 年度项目总预算</p>
+                <p class="text-sm font-medium text-cyan-200 flex items-center gap-1.5"><i data-lucide="wallet" class="w-4 h-4 text-cyan-300"></i> 年度项目总预算</p>
                 <h2 class="text-2xl font-bold text-white mt-2 font-mono">¥ <span id="kpiTotalBudget">--</span> <span id="kpiTotalBudgetUnit" class="text-base font-normal text-slate-300">亿元</span></h2>
             </div>
         </div>
-        <div class="glass-panel p-5 rounded-xl flex items-center justify-between relative overflow-hidden group">
+        <!-- 琥珀橙调卡片 -->
+        <div class="panel-amber p-5 rounded-xl flex items-center justify-between relative overflow-hidden group">
             <div>
-                <p class="text-sm font-medium text-slate-400 flex items-center gap-1.5"><i data-lucide="credit-card" class="w-4 h-4 text-amber-400"></i> 实际已支出</p>
+                <p class="text-sm font-medium text-amber-200 flex items-center gap-1.5"><i data-lucide="credit-card" class="w-4 h-4 text-amber-300"></i> 实际已支出</p>
                 <h2 class="text-2xl font-bold text-white mt-2 font-mono">¥ <span id="kpiActualSpend">--</span> <span id="kpiActualSpendUnit" class="text-base font-normal text-slate-300">亿元</span></h2>
-                <span id="kpiExecutionRate" class="inline-block mt-1 text-xs px-2 py-0.5 bg-amber-500/20 text-amber-300 rounded font-mono">执行率 --%</span>
+                <span id="kpiExecutionRate" class="inline-block mt-1 text-xs px-2 py-0.5 bg-amber-500/30 text-amber-200 border border-amber-500/40 rounded font-mono">执行率 --%</span>
             </div>
         </div>
-        <div class="glass-panel p-5 rounded-xl flex items-center justify-between relative overflow-hidden group">
+        <!-- 翡翠绿调卡片 -->
+        <div class="panel-emerald p-5 rounded-xl flex items-center justify-between relative overflow-hidden group">
             <div>
-                <p class="text-sm font-medium text-slate-400 flex items-center gap-1.5"><i data-lucide="activity" class="w-4 h-4 text-cyan-400"></i> 年度工程总体进度</p>
+                <p class="text-sm font-medium text-emerald-200 flex items-center gap-1.5"><i data-lucide="activity" class="w-4 h-4 text-emerald-300"></i> 年度工程总体进度</p>
                 <h2 class="text-2xl font-bold text-white mt-2 font-mono" id="overallProgressText">--%</h2>
-                <div class="w-32 bg-slate-700 h-2 rounded-full mt-2 overflow-hidden"><div id="overallProgressBar" class="bg-cyan-400 h-full rounded-full" style="width: 0%;"></div></div>
+                <div class="w-32 bg-slate-800/80 h-2 rounded-full mt-2 overflow-hidden border border-emerald-500/30"><div id="overallProgressBar" class="bg-emerald-400 h-full rounded-full" style="width: 0%;"></div></div>
             </div>
         </div>
-        <div class="glass-panel p-5 rounded-xl flex items-center justify-between relative overflow-hidden group">
+        <!-- 紫色调卡片 -->
+        <div class="panel-indigo p-5 rounded-xl flex items-center justify-between relative overflow-hidden group">
             <div>
-                <p class="text-sm font-medium text-slate-400 flex items-center gap-1.5"><i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i> 预警状态</p>
+                <p class="text-sm font-medium text-indigo-200 flex items-center gap-1.5"><i data-lucide="shield-check" class="w-4 h-4 text-indigo-300"></i> 预警状态</p>
                 <h2 id="kpiWarningStatus" class="text-xl font-bold text-emerald-400 mt-2 flex items-center gap-2">--</h2>
-                <p id="kpiWarningSubtext" class="text-xs text-slate-400 mt-1">--</p>
+                <p id="kpiWarningSubtext" class="text-xs text-slate-300 mt-1">--</p>
             </div>
         </div>
     </div>
 
-    <!-- Charts & Lists -->
+    <!-- Charts & Lists (中部三大主模块采用不一样的底色) -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6">
-        <div class="lg:col-span-5 glass-panel p-5 rounded-xl flex flex-col justify-between">
-            <div class="flex justify-between items-center mb-4"><h3 class="font-bold text-slate-200 flex items-center gap-2"><i data-lucide="bar-chart-3" class="w-5 h-5 text-blue-400"></i> 资金预算 vs 实际使用对比</h3></div>
+        <!-- 图表区：蓝青背景 -->
+        <div class="lg:col-span-5 panel-cyan p-5 rounded-xl flex flex-col justify-between">
+            <div class="flex justify-between items-center mb-4"><h3 class="font-bold text-cyan-100 flex items-center gap-2"><i data-lucide="bar-chart-3" class="w-5 h-5 text-cyan-300"></i> 资金预算 vs 实际使用对比</h3></div>
             <div class="relative h-64 w-full"><canvas id="budgetChart"></canvas></div>
         </div>
         
-        <!-- 施工进度与里程碑 -->
-        <div class="lg:col-span-4 glass-panel p-5 rounded-xl flex flex-col justify-between">
+        <!-- 施工进度与里程碑：翡翠绿底色 -->
+        <div class="lg:col-span-4 panel-emerald p-5 rounded-xl flex flex-col justify-between">
             <div class="flex justify-between items-center mb-4">
-                <h3 class="font-bold text-slate-200 flex items-center gap-2"><i data-lucide="file-check-2" class="w-5 h-5 text-cyan-400"></i> 施工进度与里程碑</h3>
-                <button id="openProjectModalBtn" class="text-xs text-cyan-400 hover:text-cyan-300 bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 px-2.5 py-1 rounded-md transition-all flex items-center gap-1">
+                <h3 class="font-bold text-emerald-100 flex items-center gap-2"><i data-lucide="file-check-2" class="w-5 h-5 text-emerald-300"></i> 施工进度与里程碑</h3>
+                <button id="openProjectModalBtn" class="text-xs text-emerald-200 hover:text-white bg-emerald-500/20 hover:bg-emerald-500/40 border border-emerald-500/40 px-2.5 py-1 rounded-md transition-all flex items-center gap-1">
                     <i data-lucide="list-filter" class="w-3.5 h-3.5"></i> 详细列表
                 </button>
             </div>
             <div class="scroll-wrapper cursor-pointer"><div class="scroll-inner gap-3.5" id="projectScrollContainer"></div></div>
         </div>
 
-        <!-- 26-27年规划技改项目 -->
-        <div class="lg:col-span-3 glass-panel p-5 rounded-xl flex flex-col justify-between">
+        <!-- 26-27年规划技改项目：靛紫背景 -->
+        <div class="lg:col-span-3 panel-indigo p-5 rounded-xl flex flex-col justify-between">
             <div class="flex justify-between items-center mb-4">
-                <h3 class="font-bold text-slate-200 flex items-center gap-2"><i data-lucide="list-todo" class="w-5 h-5 text-indigo-400"></i>26-27年规划技改项目</h3>
-                <button id="openPlanModalBtn" class="text-xs text-indigo-400 hover:text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/30 px-2.5 py-1 rounded-md transition-all flex items-center gap-1">
+                <h3 class="font-bold text-indigo-100 flex items-center gap-2"><i data-lucide="list-todo" class="w-5 h-5 text-indigo-300"></i>26-27年规划技改项目</h3>
+                <button id="openPlanModalBtn" class="text-xs text-indigo-200 hover:text-white bg-indigo-500/20 hover:bg-indigo-500/40 border border-indigo-500/40 px-2.5 py-1 rounded-md transition-all flex items-center gap-1">
                     <i data-lucide="list-filter" class="w-3.5 h-3.5"></i> 详细列表
                 </button>
             </div>
@@ -179,13 +200,13 @@
         </div>
     </div>
 
-    <!-- Table -->
-    <div class="glass-panel p-5 rounded-xl">
+    <!-- Table 底部资产明细表：深色科技石墨蓝背景 -->
+    <div class="panel-slate p-5 rounded-xl">
         <div class="flex justify-between items-center mb-4">
-            <h3 class="font-bold text-slate-200 flex items-center gap-2"><i data-lucide="table" class="w-5 h-5 text-emerald-400"></i> 资产支出明细数据表</h3>
+            <h3 class="font-bold text-slate-100 flex items-center gap-2"><i data-lucide="table" class="w-5 h-5 text-sky-400"></i> 资产支出明细数据表</h3>
             <div class="flex items-center gap-3">
                 <div class="text-xs text-slate-400">单位：人民币 (元)</div>
-                <button id="openAssetModalBtn" class="text-xs text-emerald-400 hover:text-emerald-300 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 px-2.5 py-1 rounded-md transition-all flex items-center gap-1">
+                <button id="openAssetModalBtn" class="text-xs text-sky-300 hover:text-white bg-sky-500/20 hover:bg-sky-500/30 border border-sky-500/40 px-2.5 py-1 rounded-md transition-all flex items-center gap-1">
                     <i data-lucide="list-filter" class="w-3.5 h-3.5"></i> 详细列表
                 </button>
             </div>
@@ -196,7 +217,7 @@
             <div class="min-w-[800px]">
                 <!-- 表头固定 -->
                 <table class="w-full text-left text-sm text-slate-300 table-fixed">
-                    <thead class="bg-slate-800/90 text-xs text-slate-400 uppercase border-b border-slate-700 block">
+                    <thead class="bg-slate-900/90 text-xs text-slate-300 uppercase border-b border-slate-700 block">
                         <tr class="flex items-center h-10">
                             <th class="w-[22%] px-4 font-semibold">资产名称</th>
                             <th class="w-[10%] px-4 font-semibold">分类</th>
@@ -222,7 +243,7 @@
 
     <!-- 施工进度与里程碑 - 详细列表弹窗框 -->
     <div id="projectModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[10000] hidden flex items-center justify-center p-4">
-        <div class="glass-panel w-full max-w-[95vw] rounded-2xl p-6 shadow-2xl border border-cyan-500/40 bg-slate-900/95 flex flex-col max-h-[85vh]">
+        <div class="panel-cyan w-full max-w-[95vw] rounded-2xl p-6 shadow-2xl bg-slate-900/95 flex flex-col max-h-[85vh]">
             <!-- 弹窗标题栏 -->
             <div class="flex justify-between items-center pb-4 mb-4 border-b border-slate-700/80">
                 <div class="flex items-center gap-2.5">
@@ -231,7 +252,7 @@
                     </div>
                     <div>
                         <h3 class="text-lg font-bold text-white">施工进度与里程碑明细表</h3>
-                        <p class="text-xs text-slate-400">查看工程项目完整进度与字段信息，支持表头多维筛选</p>
+                        <p class="text-xs text-slate-300">查看工程项目完整进度与字段信息，支持表头多维筛选</p>
                     </div>
                 </div>
                 <button id="closeProjectModalBtn" class="text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 p-2 rounded-xl transition-colors border border-slate-700">
@@ -242,19 +263,19 @@
             <!-- 表格区域 -->
             <div class="flex-1 overflow-auto custom-scrollbar border border-slate-800 rounded-xl">
                 <table class="w-full text-left text-sm text-slate-300 border-collapse min-w-[1300px]">
-                    <thead class="bg-slate-800/95 text-xs text-slate-300 sticky top-0 z-10 backdrop-blur-md border-b border-slate-700">
+                    <thead class="bg-slate-900/95 text-xs text-slate-300 sticky top-0 z-10 backdrop-blur-md border-b border-slate-700">
                         <tr>
                             <th class="p-3 font-semibold text-center w-12 text-slate-400">#</th>
                             <th class="p-3 font-semibold w-48">
                                 <div class="flex flex-col gap-1.5">
-                                    <span class="text-slate-300">项目名称</span>
-                                    <input type="text" id="filterProjectName" placeholder="筛选项目..." class="w-full px-2 py-1 bg-slate-900/90 border border-slate-700/80 rounded text-xs text-slate-200 focus:outline-none focus:border-cyan-500">
+                                    <span class="text-slate-200">项目名称</span>
+                                    <input type="text" id="filterProjectName" placeholder="筛选项目..." class="w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-xs text-slate-200 focus:outline-none focus:border-cyan-400">
                                 </div>
                             </th>
                             <th class="p-3 font-semibold w-32">
                                 <div class="flex flex-col gap-1.5">
-                                    <span class="text-slate-300">所属部门</span>
-                                    <select id="filterProjectDept" class="w-full px-2 py-1 bg-slate-900/90 border border-slate-700/80 rounded text-xs text-slate-200 focus:outline-none focus:border-cyan-500">
+                                    <span class="text-slate-200">所属部门</span>
+                                    <select id="filterProjectDept" class="w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-xs text-slate-200 focus:outline-none focus:border-cyan-400">
                                         <option value="">全部部门</option>
                                     </select>
                                 </div>
@@ -262,21 +283,21 @@
                             <th class="p-3 font-semibold text-right w-28">项目总价（万元）</th>
                             <th class="p-3 font-semibold w-36">
                                 <div class="flex flex-col gap-1.5">
-                                    <span class="text-slate-300">合作供应商</span>
-                                    <input type="text" id="filterProjectSupplier" placeholder="筛选供应商..." class="w-full px-2 py-1 bg-slate-900/90 border border-slate-700/80 rounded text-xs text-slate-200 focus:outline-none focus:border-cyan-500">
+                                    <span class="text-slate-200">合作供应商</span>
+                                    <input type="text" id="filterProjectSupplier" placeholder="筛选供应商..." class="w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-xs text-slate-200 focus:outline-none focus:border-cyan-400">
                                 </div>
                             </th>
                             <th class="p-3 font-semibold w-24">
                                 <div class="flex flex-col gap-1.5">
-                                    <span class="text-slate-300">负责人</span>
-                                    <input type="text" id="filterProjectManager" placeholder="筛选负责人..." class="w-full px-2 py-1 bg-slate-900/90 border border-slate-700/80 rounded text-xs text-slate-200 focus:outline-none focus:border-cyan-500">
+                                    <span class="text-slate-200">负责人</span>
+                                    <input type="text" id="filterProjectManager" placeholder="筛选负责人..." class="w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-xs text-slate-200 focus:outline-none focus:border-cyan-400">
                                 </div>
                             </th>
                             <th class="p-3 font-semibold w-36">开始时间</th>
                             <th class="p-3 font-semibold w-32">
                                 <div class="flex flex-col gap-1.5">
-                                    <span class="text-slate-300">维修费/固定资产</span>
-                                    <select id="filterProjectCategory" class="w-full px-2 py-1 bg-slate-900/90 border border-slate-700/80 rounded text-xs text-slate-200 focus:outline-none focus:border-cyan-500">
+                                    <span class="text-slate-200">维修费/固定资产</span>
+                                    <select id="filterProjectCategory" class="w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-xs text-slate-200 focus:outline-none focus:border-cyan-400">
                                         <option value="">全部类型</option>
                                     </select>
                                 </div>
@@ -284,17 +305,17 @@
                             <th class="p-3 font-semibold w-48">备注</th>
                             <th class="p-3 font-semibold text-center w-28">
                                 <div class="flex flex-col gap-1.5">
-                                    <span class="text-slate-300">状态</span>
-                                    <select id="filterProjectStatus" class="w-full px-2 py-1 bg-slate-900/90 border border-slate-700/80 rounded text-xs text-slate-200 focus:outline-none focus:border-cyan-500">
+                                    <span class="text-slate-200">状态</span>
+                                    <select id="filterProjectStatus" class="w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-xs text-slate-200 focus:outline-none focus:border-cyan-400">
                                         <option value="">全部状态</option>
                                     </select>
                                 </div>
                             </th>
                         </tr>
                     </thead>
-                    <tbody id="modalProjectTableBody" class="divide-y divide-slate-800/80 bg-slate-900/40"></tbody>
+                    <tbody id="modalProjectTableBody" class="divide-y divide-slate-800/80 bg-slate-950/40"></tbody>
                     <!-- 动态加总行 -->
-                    <tfoot class="bg-slate-800/90 sticky bottom-0 z-10 border-t border-slate-700 font-semibold text-slate-200">
+                    <tfoot class="bg-slate-900/90 sticky bottom-0 z-10 border-t border-slate-700 font-semibold text-slate-200">
                         <tr>
                             <td colspan="3" class="p-3 text-right">筛选合计 / 总计：</td>
                             <td class="p-3 text-right font-mono text-amber-300" id="modalProjectTotalCost">0.00</td>
@@ -304,9 +325,8 @@
                 </table>
             </div>
             
-            <!-- 弹窗底部操作与统计信息 -->
-            <div class="pt-4 mt-2 flex justify-between items-center text-xs text-slate-400">
-                <div>数据统计：共显示 <span id="modalProjectCount" class="text-cyan-400 font-bold font-mono">0</span> 项</div>
+            <div class="pt-4 mt-2 flex justify-between items-center text-xs text-slate-300">
+                <div>数据统计：共显示 <span id="modalProjectCount" class="text-cyan-300 font-bold font-mono">0</span> 项</div>
                 <button id="resetProjectFilterBtn" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg border border-slate-700 transition-colors flex items-center gap-1.5">
                     <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> 重置筛选
                 </button>
@@ -316,8 +336,7 @@
 
     <!-- 27年规划技改项目 - 详细列表弹窗框 -->
     <div id="planModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[10000] hidden flex items-center justify-center p-4">
-        <div class="glass-panel w-full max-w-[95vw] rounded-2xl p-6 shadow-2xl border border-indigo-500/40 bg-slate-900/95 flex flex-col max-h-[85vh]">
-            <!-- 弹窗标题栏 -->
+        <div class="panel-indigo w-full max-w-[95vw] rounded-2xl p-6 shadow-2xl bg-slate-900/95 flex flex-col max-h-[85vh]">
             <div class="flex justify-between items-center pb-4 mb-4 border-b border-slate-700/80">
                 <div class="flex items-center gap-2.5">
                     <div class="p-2 bg-indigo-500/20 text-indigo-400 rounded-lg border border-indigo-500/30">
@@ -325,7 +344,7 @@
                     </div>
                     <div>
                         <h3 class="text-lg font-bold text-white">27年规划技改项目明细表</h3>
-                        <p class="text-xs text-slate-400">查看技改项目完整信息与字段（含现状说明与改善方案），支持表头多维筛选</p>
+                        <p class="text-xs text-slate-300">查看技改项目完整信息与字段（含现状说明与改善方案），支持表头多维筛选</p>
                     </div>
                 </div>
                 <button id="closePlanModalBtn" class="text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 p-2 rounded-xl transition-colors border border-slate-700">
@@ -333,7 +352,6 @@
                 </button>
             </div>
 
-            <!-- 表格区域 -->
             <div class="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar border border-slate-800 rounded-xl">
                 <table class="w-full text-left text-xs text-slate-300 border-collapse table-fixed">
                     <colgroup>
@@ -348,19 +366,19 @@
                         <col style="width: 8%;">
                         <col style="width: 8%;">
                     </colgroup>
-                    <thead class="bg-slate-800/95 text-xs text-slate-300 sticky top-0 z-10 backdrop-blur-md border-b border-slate-700">
+                    <thead class="bg-slate-900/95 text-xs text-slate-300 sticky top-0 z-10 backdrop-blur-md border-b border-slate-700">
                         <tr>
                             <th class="p-2.5 font-semibold text-center text-slate-400">#</th>
                             <th class="p-2.5 font-semibold">
                                 <div class="flex flex-col gap-1">
                                     <span>项目名称</span>
-                                    <input type="text" id="filterPlanName" placeholder="筛选..." class="w-full px-1.5 py-0.5 bg-slate-900/90 border border-slate-700/80 rounded text-[11px] text-slate-200 focus:outline-none focus:border-indigo-500">
+                                    <input type="text" id="filterPlanName" placeholder="筛选..." class="w-full px-1.5 py-0.5 bg-slate-950 border border-slate-700 rounded text-[11px] text-slate-200 focus:outline-none focus:border-indigo-400">
                                 </div>
                             </th>
                             <th class="p-2.5 font-semibold">
                                 <div class="flex flex-col gap-1">
                                     <span>分类</span>
-                                    <select id="filterPlanCategory" class="w-full px-1.5 py-0.5 bg-slate-900/90 border border-slate-700/80 rounded text-[11px] text-slate-200 focus:outline-none focus:border-indigo-500">
+                                    <select id="filterPlanCategory" class="w-full px-1.5 py-0.5 bg-slate-950 border border-slate-700 rounded text-[11px] text-slate-200 focus:outline-none focus:border-indigo-400">
                                         <option value="">全部</option>
                                     </select>
                                 </div>
@@ -373,26 +391,25 @@
                             <th class="p-2.5 font-semibold">
                                 <div class="flex flex-col gap-1">
                                     <span>责任人</span>
-                                    <input type="text" id="filterPlanManager" placeholder="筛选..." class="w-full px-1.5 py-0.5 bg-slate-900/90 border border-slate-700/80 rounded text-[11px] text-slate-200 focus:outline-none focus:border-indigo-500">
+                                    <input type="text" id="filterPlanManager" placeholder="筛选..." class="w-full px-1.5 py-0.5 bg-slate-950 border border-slate-700 rounded text-[11px] text-slate-200 focus:outline-none focus:border-indigo-400">
                                 </div>
                             </th>
                             <th class="p-2.5 font-semibold text-center">
                                 <div class="flex flex-col gap-1">
                                     <span>状态</span>
-                                    <select id="filterPlanStatus" class="w-full px-1.5 py-0.5 bg-slate-900/90 border border-slate-700/80 rounded text-[11px] text-slate-200 focus:outline-none focus:border-indigo-500">
+                                    <select id="filterPlanStatus" class="w-full px-1.5 py-0.5 bg-slate-950 border border-slate-700 rounded text-[11px] text-slate-200 focus:outline-none focus:border-indigo-400">
                                         <option value="">全部</option>
                                     </select>
                                 </div>
                             </th>
                         </tr>
                     </thead>
-                    <tbody id="modalPlanTableBody" class="divide-y divide-slate-800/80 bg-slate-900/40"></tbody>
+                    <tbody id="modalPlanTableBody" class="divide-y divide-slate-800/80 bg-slate-950/40"></tbody>
                 </table>
             </div>
             
-            <!-- 弹窗底部操作与统计信息 -->
-            <div class="pt-4 mt-2 flex justify-between items-center text-xs text-slate-400">
-                <div>数据统计：共显示 <span id="modalPlanCount" class="text-indigo-400 font-bold font-mono">0</span> 项</div>
+            <div class="pt-4 mt-2 flex justify-between items-center text-xs text-slate-300">
+                <div>数据统计：共显示 <span id="modalPlanCount" class="text-indigo-300 font-bold font-mono">0</span> 项</div>
                 <button id="resetPlanFilterBtn" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg border border-slate-700 transition-colors flex items-center gap-1.5">
                     <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> 重置筛选
                 </button>
@@ -402,8 +419,7 @@
 
     <!-- 资产支出明细数据表 - 详细列表弹窗框 -->
     <div id="assetModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[10000] hidden flex items-center justify-center p-4">
-        <div class="glass-panel w-full max-w-6xl rounded-2xl p-6 shadow-2xl border border-emerald-500/40 bg-slate-900/95 flex flex-col max-h-[85vh]">
-            <!-- 弹窗标题栏 -->
+        <div class="panel-emerald w-full max-w-6xl rounded-2xl p-6 shadow-2xl bg-slate-900/95 flex flex-col max-h-[85vh]">
             <div class="flex justify-between items-center pb-4 mb-4 border-b border-slate-700/80">
                 <div class="flex items-center gap-2.5">
                     <div class="p-2 bg-emerald-500/20 text-emerald-400 rounded-lg border border-emerald-500/30">
@@ -411,7 +427,7 @@
                     </div>
                     <div>
                         <h3 class="text-lg font-bold text-white">资产支出明细数据完整表</h3>
-                        <p class="text-xs text-slate-400">查看资产支出全部明细数据与字段，支持表头分列筛选</p>
+                        <p class="text-xs text-slate-300">查看资产支出全部明细数据与字段，支持表头分列筛选</p>
                     </div>
                 </div>
                 <button id="closeAssetModalBtn" class="text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 p-2 rounded-xl transition-colors border border-slate-700">
@@ -419,30 +435,29 @@
                 </button>
             </div>
 
-            <!-- 表格区域 -->
             <div class="flex-1 overflow-auto custom-scrollbar border border-slate-800 rounded-xl">
                 <table class="w-full text-left text-sm text-slate-300 border-collapse min-w-[950px]">
-                    <thead class="bg-slate-800/95 text-xs text-slate-300 sticky top-0 z-10 backdrop-blur-md border-b border-slate-700">
+                    <thead class="bg-slate-900/95 text-xs text-slate-300 sticky top-0 z-10 backdrop-blur-md border-b border-slate-700">
                         <tr>
                             <th class="p-3 font-semibold text-center w-12 text-slate-400">#</th>
                             <th class="p-3 font-semibold">
                                 <div class="flex flex-col gap-1.5">
-                                    <span class="text-slate-300">资产名称</span>
-                                    <input type="text" id="filterAssetName" placeholder="筛选资产..." class="w-full px-2 py-1 bg-slate-900/90 border border-slate-700/80 rounded text-xs text-slate-200 focus:outline-none focus:border-emerald-500">
+                                    <span class="text-slate-200">资产名称</span>
+                                    <input type="text" id="filterAssetName" placeholder="筛选资产..." class="w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-xs text-slate-200 focus:outline-none focus:border-emerald-400">
                                 </div>
                             </th>
                             <th class="p-3 font-semibold">
                                 <div class="flex flex-col gap-1.5">
-                                    <span class="text-slate-300">分类</span>
-                                    <select id="filterAssetCategory" class="w-full px-2 py-1 bg-slate-900/90 border border-slate-700/80 rounded text-xs text-slate-200 focus:outline-none focus:border-emerald-500">
+                                    <span class="text-slate-200">分类</span>
+                                    <select id="filterAssetCategory" class="w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-xs text-slate-200 focus:outline-none focus:border-emerald-400">
                                         <option value="">全部分类</option>
                                     </select>
                                 </div>
                             </th>
                             <th class="p-3 font-semibold">
                                 <div class="flex flex-col gap-1.5">
-                                    <span class="text-slate-300">所属部门</span>
-                                    <select id="filterAssetDept" class="w-full px-2 py-1 bg-slate-900/90 border border-slate-700/80 rounded text-xs text-slate-200 focus:outline-none focus:border-emerald-500">
+                                    <span class="text-slate-200">所属部门</span>
+                                    <select id="filterAssetDept" class="w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-xs text-slate-200 focus:outline-none focus:border-emerald-400">
                                         <option value="">全部部门</option>
                                     </select>
                                 </div>
@@ -453,21 +468,20 @@
                             <th class="p-3 font-semibold text-center">入固月份</th>
                             <th class="p-3 font-semibold text-center w-28">
                                 <div class="flex flex-col gap-1.5">
-                                    <span class="text-slate-300">预算项目</span>
-                                    <select id="filterAssetStatus" class="w-full px-2 py-1 bg-slate-900/90 border border-slate-700/80 rounded text-xs text-slate-200 focus:outline-none focus:border-emerald-500">
+                                    <span class="text-slate-200">预算项目</span>
+                                    <select id="filterAssetStatus" class="w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-xs text-slate-200 focus:outline-none focus:border-emerald-400">
                                         <option value="">全部显示</option>
                                     </select>
                                 </div>
                             </th>
                         </tr>
                     </thead>
-                    <tbody id="modalAssetTableBody" class="divide-y divide-slate-800/80 bg-slate-900/40"></tbody>
+                    <tbody id="modalAssetTableBody" class="divide-y divide-slate-800/80 bg-slate-950/40"></tbody>
                 </table>
             </div>
             
-            <!-- 弹窗底部操作与统计信息 -->
-            <div class="pt-4 mt-2 flex justify-between items-center text-xs text-slate-400">
-                <div>数据统计：共显示 <span id="modalAssetCount" class="text-emerald-400 font-bold font-mono">0</span> 项</div>
+            <div class="pt-4 mt-2 flex justify-between items-center text-xs text-slate-300">
+                <div>数据统计：共显示 <span id="modalAssetCount" class="text-emerald-300 font-bold font-mono">0</span> 项</div>
                 <button id="resetAssetFilterBtn" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg border border-slate-700 transition-colors flex items-center gap-1.5">
                     <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> 重置筛选
                 </button>
@@ -478,13 +492,11 @@
     <script>
         let projectsData = [], planProjectsData = [], assetData = [];
 
-        // 统一处理并格式化偏差/执行率为带两位小数的百分比
         function getFormattedDiff(item) {
             if (item.budget && item.actual) {
                 const b = parseFloat(String(item.budget).replace(/,/g, ''));
                 const a = parseFloat(String(item.actual).replace(/,/g, ''));
                 if (!isNaN(b) && b !== 0 && !isNaN(a)) {
-                    // 计算执行率百分比并保留两位小数
                     const rate = (a / b) * 100;
                     return rate.toFixed(2) + '%';
                 }
@@ -501,22 +513,21 @@
             return '--';
         }
 
-        // 四种状态独立的底色背景与样式配置
         function getStatusBadge(progress, status) {
             const s = status || '';
             if (s.includes('已验收未开票') || progress >= 100) {
-                return { class: 'text-emerald-400 bg-emerald-500/20 border border-emerald-500/30', bar: 'bg-emerald-400', text: '[已验收未开票]' };
+                return { class: 'text-emerald-300 bg-emerald-500/20 border border-emerald-500/30', bar: 'bg-emerald-400', text: '[已验收未开票]' };
             }
             if (s.includes('已完工未验收')) {
-                return { class: 'text-cyan-400 bg-cyan-500/20 border border-cyan-500/30', bar: 'bg-cyan-400', text: '[已完工未验收]' };
+                return { class: 'text-cyan-300 bg-cyan-500/20 border border-cyan-500/30', bar: 'bg-cyan-400', text: '[已完工未验收]' };
             }
             if (s.includes('已开工未完成') || (progress > 0 && progress < 100)) {
-                return { class: 'text-amber-400 bg-amber-500/20 border border-amber-500/30', bar: 'bg-amber-400', text: s || '[已开工未完成]' };
+                return { class: 'text-amber-300 bg-amber-500/20 border border-amber-500/30', bar: 'bg-amber-400', text: s || '[已开工未完成]' };
             }
             if (s.includes('未开工未完成') || progress === 0 || !progress) {
-                return { class: 'text-purple-400 bg-purple-500/20 border border-purple-500/30', bar: 'bg-purple-400', text: s || '[未开工未完成]' };
+                return { class: 'text-purple-300 bg-purple-500/20 border border-purple-500/30', bar: 'bg-purple-400', text: s || '[未开工未完成]' };
             }
-            return { class: 'text-slate-400 bg-slate-700/50 border border-slate-600/50', bar: 'bg-slate-500', text: s || '[未开工未完成]' };
+            return { class: 'text-slate-300 bg-slate-700/50 border border-slate-600/50', bar: 'bg-slate-500', text: s || '[未开工未完成]' };
         }
 
         function getPlanStatusBadge(status) {
@@ -532,17 +543,17 @@
                 return `
                     <div class="project-item p-2 rounded-lg hover:bg-slate-800/80 transition-colors duration-200 cursor-pointer" data-index="${index}">
                         <div class="grid grid-cols-12 gap-1.5 text-xs mb-1.5 items-start pointer-events-none">
-                            <div class="col-span-6 text-slate-200 font-medium line-clamp-2 break-all leading-relaxed" title="${index + 1}. ${item.name}">
+                            <div class="col-span-6 text-slate-100 font-medium line-clamp-2 break-all leading-relaxed" title="${index + 1}. ${item.name}">
                                 ${index + 1}. ${item.name}
                             </div>
-                            <div class="col-span-3 text-slate-400 font-mono text-center pt-0.5 truncate">
+                            <div class="col-span-3 text-slate-300 font-mono text-center pt-0.5 truncate">
                                 ${item.cost || '--'}
                             </div>
                             <div class="col-span-3 text-right pt-0.5 truncate">
                                 <span class="${badge.class} px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold inline-block">${badge.text}</span>
                             </div>
                         </div>
-                        <div class="w-full bg-slate-700/60 h-1.5 rounded-full overflow-hidden pointer-events-none">
+                        <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden pointer-events-none">
                             <div class="${badge.bar} h-full rounded-full" style="width: ${item.progress}%;"></div>
                         </div>
                     </div>`;
@@ -555,8 +566,8 @@
             const buildHtmlGroup = (list) => list.map((item, index) => {
                 const badgeClass = getPlanStatusBadge(item.status);
                 return `
-                    <div class="plan-item p-2.5 rounded-lg bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700/50 flex justify-between items-center cursor-pointer transition-colors" data-index="${index}">
-                        <span class="text-xs text-slate-300 font-medium pointer-events-none">${index + 1}. ${item.name}</span>
+                    <div class="plan-item p-2.5 rounded-lg bg-slate-900/60 hover:bg-slate-800/80 border border-indigo-500/20 flex justify-between items-center cursor-pointer transition-colors" data-index="${index}">
+                        <span class="text-xs text-slate-200 font-medium pointer-events-none">${index + 1}. ${item.name}</span>
                         <span class="px-2 py-0.5 rounded border text-[10px] ${badgeClass} pointer-events-none">${item.status}</span>
                     </div>`;
             }).join('');
@@ -571,24 +582,23 @@
                 const diffClass = isOver ? 'text-amber-400' : 'text-emerald-400';
                 const statusBadge = item.status === '正常' ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' : 'bg-amber-500/20 text-amber-300 border-amber-500/30';
                 return `
-                    <tr class="asset-row hover:bg-slate-800/80 transition-colors cursor-pointer flex items-center h-[48px] box-border" data-index="${index}">
+                    <tr class="asset-row hover:bg-slate-800/60 transition-colors cursor-pointer flex items-center h-[48px] box-border" data-index="${index}">
                         <td class="w-[22%] px-4 font-medium text-white flex items-center gap-2 truncate">
-                            <span class="w-2 h-2 rounded-full shrink-0 ${item.status === '正常' ? 'bg-blue-400' : 'bg-amber-400'}"></span>
+                            <span class="w-2 h-2 rounded-full shrink-0 ${item.status === '正常' ? 'bg-cyan-400' : 'bg-amber-400'}"></span>
                             <span class="truncate">${item.name}</span>
                         </td>
-                        <td class="w-[10%] px-4 text-slate-400 truncate">${item.category}</td>
-                        <td class="w-[10%] px-4 text-slate-300 truncate">${item.dept}</td>
+                        <td class="w-[10%] px-4 text-slate-300 truncate">${item.category}</td>
+                        <td class="w-[10%] px-4 text-slate-200 truncate">${item.dept}</td>
                         <td class="w-[10%] px-4 font-mono text-right truncate">${item.budget}</td>
                         <td class="w-[10%] px-4 font-mono text-right truncate">${item.actual}</td>
                         <td class="w-[10%] px-4 font-mono text-right truncate ${diffClass}">${formattedDiff}</td>
-                        <td class="w-[10%] px-4 font-mono text-center text-slate-300 truncate">${item.month}</td>
+                        <td class="w-[10%] px-4 font-mono text-center text-slate-200 truncate">${item.month}</td>
                         <td class="w-[17%] px-4 text-center truncate"><span class="px-2 py-0.5 text-xs rounded border ${statusBadge}">${item.status}</span></td>
                     </tr>`;
             };
             tbody.innerHTML = assetData.map((item, index) => buildRowHtml(item, index)).join('') + assetData.map((item, index) => buildRowHtml(item, index)).join('');
         }
 
-        /* ---------------- 施工进度 Modal 逻辑 ---------------- */
         function initProjectModalLogic() {
             const modal = document.getElementById('projectModal');
             const openBtn = document.getElementById('openProjectModalBtn');
@@ -619,12 +629,7 @@
             filterStatus.addEventListener('change', applyProjectFilters);
 
             resetBtn.addEventListener('click', () => {
-                filterName.value = '';
-                filterDept.value = '';
-                filterSupplier.value = '';
-                filterManager.value = '';
-                filterCategory.value = '';
-                filterStatus.value = '';
+                filterName.value = ''; filterDept.value = ''; filterSupplier.value = ''; filterManager.value = ''; filterCategory.value = ''; filterStatus.value = '';
                 applyProjectFilters();
             });
         }
@@ -671,15 +676,13 @@
             dataList.forEach(item => {
                 if (item.cost !== undefined && item.cost !== null) {
                     const num = parseFloat(String(item.cost).replace(/,/g, ''));
-                    if (!isNaN(num)) {
-                        totalCostSum += num;
-                    }
+                    if (!isNaN(num)) totalCostSum += num;
                 }
             });
             document.getElementById('modalProjectTotalCost').innerText = totalCostSum.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
             if (dataList.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="10" class="text-center py-8 text-slate-500">未找到符合条件的数据</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="10" class="text-center py-8 text-slate-400">未找到符合条件的数据</td></tr>`;
                 return;
             }
 
@@ -688,15 +691,15 @@
                 const startTimeVal = item.progress || item.startTime || item.startDate || '--';
                 return `
                     <tr class="hover:bg-slate-800/60 transition-colors border-b border-slate-800/50">
-                        <td class="p-3 text-center text-slate-500 font-mono text-xs">${idx + 1}</td>
-                        <td class="p-3 font-medium text-slate-200">${item.name || '--'}</td>
-                        <td class="p-3 text-slate-400">${item.dept || '--'}</td>
+                        <td class="p-3 text-center text-slate-400 font-mono text-xs">${idx + 1}</td>
+                        <td class="p-3 font-medium text-slate-100">${item.name || '--'}</td>
+                        <td class="p-3 text-slate-300">${item.dept || '--'}</td>
                         <td class="p-3 text-right font-mono text-amber-300 font-medium">${item.cost || '--'}</td>
-                        <td class="p-3 text-slate-300">${item.supplier || '--'}</td>
-                        <td class="p-3 text-slate-300">${item.manager || '--'}</td>
-                        <td class="p-3 text-center font-mono text-xs text-slate-300">${startTimeVal}</td>
-                        <td class="p-3 text-slate-300 font-medium">${item.Categories || item.category || '--'}</td>
-                        <td class="p-3 text-slate-400 italic">${item.Notes || item.remark || item.note || '--'}</td>
+                        <td class="p-3 text-slate-200">${item.supplier || '--'}</td>
+                        <td class="p-3 text-slate-200">${item.manager || '--'}</td>
+                        <td class="p-3 text-center font-mono text-xs text-slate-200">${startTimeVal}</td>
+                        <td class="p-3 text-slate-200 font-medium">${item.Categories || item.category || '--'}</td>
+                        <td class="p-3 text-slate-300 italic">${item.Notes || item.remark || item.note || '--'}</td>
                         <td class="p-3 text-center">
                             <span class="text-[11px] px-2 py-0.5 rounded font-mono font-medium ${badge.class}">${badge.text}</span>
                         </td>
@@ -704,7 +707,6 @@
             }).join('');
         }
 
-        /* ---------------- 27年规划技改项目 Modal 逻辑 ---------------- */
         function initPlanModalLogic() {
             const modal = document.getElementById('planModal');
             const openBtn = document.getElementById('openPlanModalBtn');
@@ -731,10 +733,7 @@
             filterStatus.addEventListener('change', applyPlanFilters);
 
             resetBtn.addEventListener('click', () => {
-                filterName.value = '';
-                filterCategory.value = '';
-                filterManager.value = '';
-                filterStatus.value = '';
+                filterName.value = ''; filterCategory.value = ''; filterManager.value = ''; filterStatus.value = '';
                 applyPlanFilters();
             });
         }
@@ -769,7 +768,7 @@
             document.getElementById('modalPlanCount').innerText = dataList.length;
 
             if (dataList.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="10" class="text-center py-8 text-slate-500">未找到符合条件的数据</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="10" class="text-center py-8 text-slate-400">未找到符合条件的数据</td></tr>`;
                 return;
             }
 
@@ -777,14 +776,14 @@
                 const badgeClass = getPlanStatusBadge(item.status);
                 return `
                     <tr class="hover:bg-slate-800/60 transition-colors border-b border-slate-800/50">
-                        <td class="p-2.5 text-center text-slate-500 font-mono text-xs">${idx + 1}</td>
-                        <td class="p-2.5 font-medium text-slate-200" title="${item.name || ''}">${item.name || '--'}</td>
-                        <td class="p-2.5 text-slate-400"><span class="bg-slate-800 px-1 py-0.5 rounded border border-slate-700 text-[11px]">${item.category || '--'}</span></td>
-                        <td class="p-2.5 text-slate-300 text-[11px] leading-relaxed" title="${item.currentStatus || ''}">${item.currentStatus || '--'}</td>
-                        <td class="p-2.5 text-slate-300 text-[11px] leading-relaxed" title="${item.improvement || ''}">${item.improvement || '--'}</td>
+                        <td class="p-2.5 text-center text-slate-400 font-mono text-xs">${idx + 1}</td>
+                        <td class="p-2.5 font-medium text-slate-100" title="${item.name || ''}">${item.name || '--'}</td>
+                        <td class="p-2.5 text-slate-300"><span class="bg-slate-900 px-1 py-0.5 rounded border border-slate-700 text-[11px]">${item.category || '--'}</span></td>
+                        <td class="p-2.5 text-slate-200 text-[11px] leading-relaxed" title="${item.currentStatus || ''}">${item.currentStatus || '--'}</td>
+                        <td class="p-2.5 text-slate-200 text-[11px] leading-relaxed" title="${item.improvement || ''}">${item.improvement || '--'}</td>
                         <td class="p-2.5 text-right font-mono text-amber-300 text-xs">${item.cost || '--'}</td>
                         <td class="p-2.5 text-right font-mono text-emerald-400 text-xs">${item.benefit || '--'}</td>
-                        <td class="p-2.5 text-center font-mono text-[11px] text-slate-300">${item.endTime || '--'}</td>
+                        <td class="p-2.5 text-center font-mono text-[11px] text-slate-200">${item.endTime || '--'}</td>
                         <td class="p-2.5 text-indigo-300 font-medium text-xs" title="${item.manager || ''}">${item.manager || '--'}</td>
                         <td class="p-2.5 text-center">
                             <span class="text-[10px] px-1.5 py-0.5 rounded border font-mono font-medium ${badgeClass}">${item.status || '--'}</span>
@@ -793,7 +792,6 @@
             }).join('');
         }
 
-        /* ---------------- 资产支出明细数据表 Modal 逻辑 ---------------- */
         function initAssetModalLogic() {
             const modal = document.getElementById('assetModal');
             const openBtn = document.getElementById('openAssetModalBtn');
@@ -820,10 +818,7 @@
             filterStatus.addEventListener('change', applyAssetFilters);
 
             resetBtn.addEventListener('click', () => {
-                filterName.value = '';
-                filterCategory.value = '';
-                filterDept.value = '';
-                filterStatus.value = '';
+                filterName.value = ''; filterCategory.value = ''; filterDept.value = ''; filterStatus.value = '';
                 applyAssetFilters();
             });
         }
@@ -861,7 +856,7 @@
             document.getElementById('modalAssetCount').innerText = dataList.length;
 
             if (dataList.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="9" class="text-center py-8 text-slate-500">未找到符合条件的数据</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="9" class="text-center py-8 text-slate-400">未找到符合条件的数据</td></tr>`;
                 return;
             }
 
@@ -872,17 +867,17 @@
                 const statusBadge = item.status === '正常' ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' : 'bg-amber-500/20 text-amber-300 border-amber-500/30';
                 return `
                     <tr class="hover:bg-slate-800/60 transition-colors border-b border-slate-800/50">
-                        <td class="p-3 text-center text-slate-500 font-mono text-xs">${idx + 1}</td>
-                        <td class="p-3 font-medium text-slate-200 flex items-center gap-2">
-                            <span class="w-2 h-2 rounded-full shrink-0 ${item.status === '正常' ? 'bg-blue-400' : 'bg-amber-400'}"></span>
+                        <td class="p-3 text-center text-slate-400 font-mono text-xs">${idx + 1}</td>
+                        <td class="p-3 font-medium text-slate-100 flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full shrink-0 ${item.status === '正常' ? 'bg-cyan-400' : 'bg-amber-400'}"></span>
                             <span>${item.name || '--'}</span>
                         </td>
-                        <td class="p-3 text-slate-400"><span class="bg-slate-800 px-1.5 py-0.5 rounded border border-slate-700 text-xs">${item.category || '--'}</span></td>
-                        <td class="p-3 text-slate-300">${item.dept || '--'}</td>
+                        <td class="p-3 text-slate-300"><span class="bg-slate-900 px-1.5 py-0.5 rounded border border-slate-700 text-xs">${item.category || '--'}</span></td>
+                        <td class="p-3 text-slate-200">${item.dept || '--'}</td>
                         <td class="p-3 text-right font-mono text-blue-300 font-medium">${item.budget || '--'}</td>
                         <td class="p-3 text-right font-mono text-amber-300 font-medium">${item.actual || '--'}</td>
                         <td class="p-3 text-right font-mono font-bold ${diffClass}">${formattedDiff}</td>
-                        <td class="p-3 text-center font-mono text-slate-300">${item.month || '--'}</td>
+                        <td class="p-3 text-center font-mono text-slate-200">${item.month || '--'}</td>
                         <td class="p-3 text-center">
                             <span class="text-[11px] px-2 py-0.5 rounded border font-mono font-medium ${statusBadge}">${item.status || '--'}</span>
                         </td>
@@ -961,17 +956,17 @@
                 data: {
                     labels: chartData.labels || [],
                     datasets: [
-                        { label: '预算 (万元)', data: chartData.budgets || [], backgroundColor: '#3b82f6', borderRadius: 4, barPercentage: 0.6 },
-                        { label: '实际使用 (万元)', data: chartData.actuals || [], backgroundColor: '#f97316', borderRadius: 4, barPercentage: 0.6 }
+                        { label: '预算 (万元)', data: chartData.budgets || [], backgroundColor: '#22d3ee', borderRadius: 4, barPercentage: 0.6 },
+                        { label: '实际使用 (万元)', data: chartData.actuals || [], backgroundColor: '#fbbf24', borderRadius: 4, barPercentage: 0.6 }
                     ]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: { legend: { labels: { color: '#94a3b8' } } },
+                    plugins: { legend: { labels: { color: '#cbd5e1' } } },
                     scales: {
-                        x: { ticks: { color: '#94a3b8' }, grid: { display: false } },
-                        y: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(51, 65, 85, 0.4)' } }
+                        x: { ticks: { color: '#cbd5e1' }, grid: { display: false } },
+                        y: { ticks: { color: '#cbd5e1' }, grid: { color: 'rgba(51, 65, 85, 0.4)' } }
                     }
                 }
             });
