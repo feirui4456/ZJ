@@ -333,7 +333,7 @@
                 </button>
             </div>
 
-            <!-- 表格区域（使用 table-fixed 与百分比 colgroup，消除底部横向拉条） -->
+            <!-- 表格区域 -->
             <div class="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar border border-slate-800 rounded-xl">
                 <table class="w-full text-left text-xs text-slate-300 border-collapse table-fixed">
                     <colgroup>
@@ -478,6 +478,29 @@
     <script>
         let projectsData = [], planProjectsData = [], assetData = [];
 
+        // 统一处理并格式化偏差/执行率为带两位小数的百分比
+        function getFormattedDiff(item) {
+            if (item.budget && item.actual) {
+                const b = parseFloat(String(item.budget).replace(/,/g, ''));
+                const a = parseFloat(String(item.actual).replace(/,/g, ''));
+                if (!isNaN(b) && b !== 0 && !isNaN(a)) {
+                    // 计算执行率百分比并保留两位小数
+                    const rate = (a / b) * 100;
+                    return rate.toFixed(2) + '%';
+                }
+            }
+            if (item.diff !== undefined && item.diff !== null) {
+                let clean = String(item.diff).replace(/%/g, '').trim();
+                let num = parseFloat(clean);
+                if (!isNaN(num)) {
+                    const prefix = String(item.diff).startsWith('+') ? '+' : '';
+                    return prefix + num.toFixed(2) + '%';
+                }
+                return item.diff;
+            }
+            return '--';
+        }
+
         // 四种状态独立的底色背景与样式配置
         function getStatusBadge(progress, status) {
             const s = status || '';
@@ -508,7 +531,6 @@
                 const badge = getStatusBadge(item.progress, item.status);
                 return `
                     <div class="project-item p-2 rounded-lg hover:bg-slate-800/80 transition-colors duration-200 cursor-pointer" data-index="${index}">
-                        <!-- 修改此处：项目名称改为最多显示两行、允许自动换行且不出现省略号 -->
                         <div class="grid grid-cols-12 gap-1.5 text-xs mb-1.5 items-start pointer-events-none">
                             <div class="col-span-6 text-slate-200 font-medium line-clamp-2 break-all leading-relaxed" title="${index + 1}. ${item.name}">
                                 ${index + 1}. ${item.name}
@@ -544,7 +566,9 @@
         function renderAssetTable() {
             const tbody = document.getElementById('assetTableBody');
             const buildRowHtml = (item, index) => {
-                const diffClass = String(item.diff).startsWith('+') ? 'text-amber-400' : 'text-emerald-400';
+                const formattedDiff = getFormattedDiff(item);
+                const isOver = String(formattedDiff).startsWith('+') || parseFloat(formattedDiff) > 100;
+                const diffClass = isOver ? 'text-amber-400' : 'text-emerald-400';
                 const statusBadge = item.status === '正常' ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' : 'bg-amber-500/20 text-amber-300 border-amber-500/30';
                 return `
                     <tr class="asset-row hover:bg-slate-800/80 transition-colors cursor-pointer flex items-center h-[48px] box-border" data-index="${index}">
@@ -556,7 +580,7 @@
                         <td class="w-[10%] px-4 text-slate-300 truncate">${item.dept}</td>
                         <td class="w-[10%] px-4 font-mono text-right truncate">${item.budget}</td>
                         <td class="w-[10%] px-4 font-mono text-right truncate">${item.actual}</td>
-                        <td class="w-[10%] px-4 font-mono text-right truncate ${diffClass}">${item.diff}</td>
+                        <td class="w-[10%] px-4 font-mono text-right truncate ${diffClass}">${formattedDiff}</td>
                         <td class="w-[10%] px-4 font-mono text-center text-slate-300 truncate">${item.month}</td>
                         <td class="w-[17%] px-4 text-center truncate"><span class="px-2 py-0.5 text-xs rounded border ${statusBadge}">${item.status}</span></td>
                     </tr>`;
@@ -643,18 +667,15 @@
             const tbody = document.getElementById('modalProjectTableBody');
             document.getElementById('modalProjectCount').innerText = dataList.length;
 
-            // 计算筛选后的项目总价加总（支持字符串数字解析，兼容带逗号或单位的情况）
             let totalCostSum = 0;
             dataList.forEach(item => {
                 if (item.cost !== undefined && item.cost !== null) {
-                    // 提取数字（如 "1,200.5" 或 "150"）
                     const num = parseFloat(String(item.cost).replace(/,/g, ''));
                     if (!isNaN(num)) {
                         totalCostSum += num;
                     }
                 }
             });
-            // 更新底部加总显示（保留两位小数）
             document.getElementById('modalProjectTotalCost').innerText = totalCostSum.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
             if (dataList.length === 0) {
@@ -845,7 +866,9 @@
             }
 
             tbody.innerHTML = dataList.map((item, idx) => {
-                const diffClass = String(item.diff).startsWith('+') ? 'text-amber-400' : 'text-emerald-400';
+                const formattedDiff = getFormattedDiff(item);
+                const isOver = String(formattedDiff).startsWith('+') || parseFloat(formattedDiff) > 100;
+                const diffClass = isOver ? 'text-amber-400' : 'text-emerald-400';
                 const statusBadge = item.status === '正常' ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' : 'bg-amber-500/20 text-amber-300 border-amber-500/30';
                 return `
                     <tr class="hover:bg-slate-800/60 transition-colors border-b border-slate-800/50">
@@ -858,7 +881,7 @@
                         <td class="p-3 text-slate-300">${item.dept || '--'}</td>
                         <td class="p-3 text-right font-mono text-blue-300 font-medium">${item.budget || '--'}</td>
                         <td class="p-3 text-right font-mono text-amber-300 font-medium">${item.actual || '--'}</td>
-                        <td class="p-3 text-right font-mono font-bold ${diffClass}">${item.diff || '--'}</td>
+                        <td class="p-3 text-right font-mono font-bold ${diffClass}">${formattedDiff}</td>
                         <td class="p-3 text-center font-mono text-slate-300">${item.month || '--'}</td>
                         <td class="p-3 text-center">
                             <span class="text-[11px] px-2 py-0.5 rounded border font-mono font-medium ${statusBadge}">${item.status || '--'}</span>
@@ -971,7 +994,6 @@
             renderAssetTable();
             renderChart(data.chart || {});
 
-            // 初始化弹窗逻辑
             initProjectModalLogic();
             initPlanModalLogic();
             initAssetModalLogic();
@@ -1009,14 +1031,16 @@
 
             setupDelegatedTooltip('assetTableBody', '.asset-row', 'assetTooltip', (index) => {
                 const item = assetData[index]; if (!item) return;
+                const formattedDiff = getFormattedDiff(item);
+                const isOver = String(formattedDiff).startsWith('+') || parseFloat(formattedDiff) > 100;
                 document.getElementById('assetTtName').innerText = item.name;
                 document.getElementById('assetTtCategory').innerText = item.category;
                 document.getElementById('assetTtDept').innerText = item.dept;
                 document.getElementById('assetTtMonth').innerText = item.month;
                 document.getElementById('assetTtBudget').innerText = `¥ ${item.budget}`;
                 document.getElementById('assetTtActual').innerText = `¥ ${item.actual}`;
-                document.getElementById('assetTtDiff').innerText = item.diff;
-                document.getElementById('assetTtDiff').className = `font-mono font-bold ${String(item.diff).startsWith('+') ? 'text-amber-400' : 'text-emerald-400'}`;
+                document.getElementById('assetTtDiff').innerText = formattedDiff;
+                document.getElementById('assetTtDiff').className = `font-mono font-bold ${isOver ? 'text-amber-400' : 'text-emerald-400'}`;
                 document.getElementById('assetTtStatus').innerText = item.status;
                 document.getElementById('assetTtStatus').className = `text-[11px] px-2 py-0.5 rounded border font-mono font-medium ${item.status === '正常' ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' : 'bg-amber-500/20 text-amber-300 border-amber-500/30'}`;
             });
