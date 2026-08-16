@@ -33,7 +33,7 @@
         /* 表格 5 行平滑滚动动画 */
         @keyframes tableAutoScroll { 0% { transform: translateY(0); } 100% { transform: translateY(-50%); } }
         .table-scroll-wrapper { position: relative; height: 240px; overflow: hidden; } 
-        .table-scroll-inner { animation: tableAutoScroll 120s linear infinite; }
+        .table-scroll-inner { animation: tableAutoScroll 220s linear infinite; }
         .table-scroll-wrapper:hover .table-scroll-inner { animation-play-state: paused; }
 
         .custom-tooltip { pointer-events: none !important; transition: opacity 0.2s ease-out, top 0.05s ease-out, left 0.05s ease-out; will-change: top, left, opacity; z-index: 9999; }
@@ -86,7 +86,7 @@
                 <h4 id="assetTtName" class="font-bold text-sm text-emerald-300">资产名称</h4>
                 <span id="assetTtCategory" class="text-[10px] text-slate-400 bg-slate-800 px-1.5 py-0.5 rounded border border-slate-700 mt-1 inline-block">分类</span>
             </div>
-            <span id="assetTtStatus" class="text-[11px] px-2 py-0.5 rounded font-mono font-medium">状态</span>
+            <span id="assetTtStatus" class="text-[11px] px-2 py-0.5 rounded font-mono font-medium">对应预算项目</span>
         </div>
         <div class="space-y-2 text-xs">
             <div class="flex items-center justify-between"><span class="text-slate-400 flex items-center gap-1.5"><i data-lucide="building" class="w-3.5 h-3.5 text-blue-400"></i> 所属部门</span><span id="assetTtDept" class="text-slate-200 font-medium">--</span></div>
@@ -199,13 +199,13 @@
                     <thead class="bg-slate-800/90 text-xs text-slate-400 uppercase border-b border-slate-700 block">
                         <tr class="flex items-center h-10">
                             <th class="w-[22%] px-4 font-semibold">资产名称</th>
-                            <th class="w-[12%] px-4 font-semibold">分类</th>
-                            <th class="w-[14%] px-4 font-semibold">所属部门</th>
-                            <th class="w-[14%] px-4 font-semibold text-right">计划预算(元)</th>
-                            <th class="w-[14%] px-4 font-semibold text-right">实际支出(元)</th>
+                            <th class="w-[10%] px-4 font-semibold">分类</th>
+                            <th class="w-[10%] px-4 font-semibold">所属部门</th>
+                            <th class="w-[10%] px-4 font-semibold text-right">计划预算(元)</th>
+                            <th class="w-[10%] px-4 font-semibold text-right">实际支出(元)</th>
                             <th class="w-[10%] px-4 font-semibold text-right">偏差/执行率</th>
-                            <th class="w-[8%] px-4 font-semibold text-center">入固月份</th>
-                            <th class="w-[6%] px-4 font-semibold text-center">状态</th>
+                            <th class="w-[10%] px-4 font-semibold text-center">入帐月份</th>
+                            <th class="w-[17%] px-4 font-semibold text-center">预算项目名称</th>
                         </tr>
                     </thead>
                 </table>
@@ -453,9 +453,9 @@
                             <th class="p-3 font-semibold text-center">入固月份</th>
                             <th class="p-3 font-semibold text-center w-28">
                                 <div class="flex flex-col gap-1.5">
-                                    <span class="text-slate-300">状态</span>
+                                    <span class="text-slate-300">预算项目</span>
                                     <select id="filterAssetStatus" class="w-full px-2 py-1 bg-slate-900/90 border border-slate-700/80 rounded text-xs text-slate-200 focus:outline-none focus:border-emerald-500">
-                                        <option value="">全部状态</option>
+                                        <option value="">全部显示</option>
                                     </select>
                                 </div>
                             </th>
@@ -552,13 +552,13 @@
                             <span class="w-2 h-2 rounded-full shrink-0 ${item.status === '正常' ? 'bg-blue-400' : 'bg-amber-400'}"></span>
                             <span class="truncate">${item.name}</span>
                         </td>
-                        <td class="w-[12%] px-4 text-slate-400 truncate">${item.category}</td>
-                        <td class="w-[14%] px-4 text-slate-300 truncate">${item.dept}</td>
-                        <td class="w-[14%] px-4 font-mono text-right truncate">${item.budget}</td>
-                        <td class="w-[14%] px-4 font-mono text-right truncate">${item.actual}</td>
+                        <td class="w-[10%] px-4 text-slate-400 truncate">${item.category}</td>
+                        <td class="w-[10%] px-4 text-slate-300 truncate">${item.dept}</td>
+                        <td class="w-[10%] px-4 font-mono text-right truncate">${item.budget}</td>
+                        <td class="w-[10%] px-4 font-mono text-right truncate">${item.actual}</td>
                         <td class="w-[10%] px-4 font-mono text-right truncate ${diffClass}">${item.diff}</td>
-                        <td class="w-[8%] px-4 font-mono text-center text-slate-300 truncate">${item.month}</td>
-                        <td class="w-[6%] px-4 text-center shrink-0"><span class="px-2 py-0.5 text-xs rounded border ${statusBadge}">${item.status}</span></td>
+                        <td class="w-[10%] px-4 font-mono text-center text-slate-300 truncate">${item.month}</td>
+                        <td class="w-[17%] px-4 text-center truncate"><span class="px-2 py-0.5 text-xs rounded border ${statusBadge}">${item.status}</span></td>
                     </tr>`;
             };
             tbody.innerHTML = assetData.map((item, index) => buildRowHtml(item, index)).join('') + assetData.map((item, index) => buildRowHtml(item, index)).join('');
