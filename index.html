@@ -57,6 +57,24 @@
 </head>
 <body class="min-h-screen p-4 md:p-6 custom-scrollbar relative">
 
+    <!-- 密码验证遮罩层 -->
+    <div id="passwordModal" class="fixed inset-0 bg-slate-950/95 backdrop-blur-xl z-[99999] flex items-center justify-center p-4">
+        <div class="panel-indigo w-full max-w-md rounded-2xl p-6 shadow-2xl bg-slate-900/95 border border-indigo-500/40 text-center">
+            <div class="p-3 bg-indigo-500/20 text-indigo-400 rounded-xl border border-indigo-500/30 w-12 h-12 flex items-center justify-center mx-auto mb-4">
+                <i data-lucide="lock" class="w-6 h-6"></i>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-2">访问权限验证</h3>
+            <p class="text-xs text-slate-300 mb-6">请输入访问密码以查看资金预算与工程进度综合看板</p>
+            <form id="passwordForm" onsubmit="checkPassword(event)" class="space-y-4">
+                <input type="password" id="accessPassword" placeholder="请输入密码..." class="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-indigo-400 text-center tracking-widest" autofocus required>
+                <div id="passwordError" class="text-xs text-rose-400 hidden">密码错误，请重新输入</div>
+                <button type="submit" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-xl transition-colors shadow-lg shadow-indigo-600/30 cursor-pointer">
+                    确认进入
+                </button>
+            </form>
+        </div>
+    </div>
+
     <!-- Tooltips -->
     <div id="projectTooltip" class="custom-tooltip fixed hidden opacity-0 panel-cyan rounded-xl p-4 w-72 shadow-2xl bg-slate-900/95 backdrop-blur-md">
         <div class="flex justify-between items-start mb-2.5 pb-2 border-b border-slate-700/80">
@@ -181,7 +199,7 @@
         <div class="lg:col-span-4 panel-emerald p-5 rounded-xl flex flex-col justify-between">
             <div class="flex justify-between items-center mb-4">
                 <h3 class="font-bold text-emerald-100 flex items-center gap-2"><i data-lucide="file-check-2" class="w-5 h-5 text-emerald-300"></i> 施工进度与里程碑</h3>
-                <button id="openProjectModalBtn" class="text-xs text-emerald-200 hover:text-white bg-emerald-500/20 hover:bg-emerald-500/40 border border-emerald-500/40 px-2.5 py-1 rounded-md transition-all flex items-center gap-1">
+                <button id="openProjectModalBtn" class="text-xs text-emerald-200 hover:text-white bg-emerald-500/20 hover:bg-emerald-500/40 border border-emerald-500/40 px-2.5 py-1 rounded-md transition-all flex items-center gap-1 cursor-pointer">
                     <i data-lucide="list-filter" class="w-3.5 h-3.5"></i> 详细列表
                 </button>
             </div>
@@ -192,7 +210,7 @@
         <div class="lg:col-span-3 panel-indigo p-5 rounded-xl flex flex-col justify-between">
             <div class="flex justify-between items-center mb-4">
                 <h3 class="font-bold text-indigo-100 flex items-center gap-2"><i data-lucide="list-todo" class="w-5 h-5 text-indigo-300"></i>26-27年规划技改项目</h3>
-                <button id="openPlanModalBtn" class="text-xs text-indigo-200 hover:text-white bg-indigo-500/20 hover:bg-indigo-500/40 border border-indigo-500/40 px-2.5 py-1 rounded-md transition-all flex items-center gap-1">
+                <button id="openPlanModalBtn" class="text-xs text-indigo-200 hover:text-white bg-indigo-500/20 hover:bg-indigo-500/40 border border-indigo-500/40 px-2.5 py-1 rounded-md transition-all flex items-center gap-1 cursor-pointer">
                     <i data-lucide="list-filter" class="w-3.5 h-3.5"></i> 详细列表
                 </button>
             </div>
@@ -206,7 +224,7 @@
             <h3 class="font-bold text-slate-100 flex items-center gap-2"><i data-lucide="table" class="w-5 h-5 text-sky-400"></i> 资产支出明细数据表</h3>
             <div class="flex items-center gap-3">
                 <div class="text-xs text-slate-400">单位：人民币 (元)</div>
-                <button id="openAssetModalBtn" class="text-xs text-sky-300 hover:text-white bg-sky-500/20 hover:bg-sky-500/30 border border-sky-500/40 px-2.5 py-1 rounded-md transition-all flex items-center gap-1">
+                <button id="openAssetModalBtn" class="text-xs text-sky-300 hover:text-white bg-sky-500/20 hover:bg-sky-500/30 border border-sky-500/40 px-2.5 py-1 rounded-md transition-all flex items-center gap-1 cursor-pointer">
                     <i data-lucide="list-filter" class="w-3.5 h-3.5"></i> 详细列表
                 </button>
             </div>
@@ -214,19 +232,19 @@
         
         <!-- 表格固定表头 + 动态5行自动滚动内容 -->
         <div class="w-full overflow-x-auto custom-scrollbar">
-            <div class="min-w-[800px]">
-                <!-- 表头固定 -->
+            <div class="min-w-[1300px]">
+                <!-- 表格固定 -->
                 <table class="w-full text-left text-sm text-slate-300 table-fixed">
                     <thead class="bg-slate-900/90 text-xs text-slate-300 uppercase border-b border-slate-700 block">
                         <tr class="flex items-center h-10">
-                            <th class="w-[22%] px-4 font-semibold">资产名称</th>
-                            <th class="w-[10%] px-4 font-semibold">分类</th>
-                            <th class="w-[10%] px-4 font-semibold">所属部门</th>
-                            <th class="w-[10%] px-4 font-semibold text-right">计划预算(元)</th>
-                            <th class="w-[10%] px-4 font-semibold text-right">实际支出(元)</th>
-                            <th class="w-[10%] px-4 font-semibold text-right">偏差/执行率</th>
-                            <th class="w-[10%] px-4 font-semibold text-center">入帐月份</th>
-                            <th class="w-[17%] px-4 font-semibold text-center">预算项目名称</th>
+                            <th class="w-[22%] px-3 font-semibold">资产名称</th>
+                            <th class="w-[10%] px-3 font-semibold">分类</th>
+                            <th class="w-[11%] px-3 font-semibold">所属部门</th>
+                            <th class="w-[11%] px-3 font-semibold text-right">计划预算(元)</th>
+                            <th class="w-[11%] px-3 font-semibold text-right">实际支出(元)</th>
+                            <th class="w-[11%] px-3 font-semibold text-right">偏差/执行率</th>
+                            <th class="w-[10%] px-3 font-semibold text-center">入帐月份</th>
+                            <th class="w-[14%] px-3 font-semibold text-center">预算项目名称</th>
                         </tr>
                     </thead>
                 </table>
@@ -255,7 +273,7 @@
                         <p class="text-xs text-slate-300">查看工程项目完整进度与字段信息，支持表头多维筛选</p>
                     </div>
                 </div>
-                <button id="closeProjectModalBtn" class="text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 p-2 rounded-xl transition-colors border border-slate-700">
+                <button id="closeProjectModalBtn" class="text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 p-2 rounded-xl transition-colors border border-slate-700 cursor-pointer">
                     <i data-lucide="x" class="w-5 h-5"></i>
                 </button>
             </div>
@@ -327,7 +345,7 @@
             
             <div class="pt-4 mt-2 flex justify-between items-center text-xs text-slate-300">
                 <div>数据统计：共显示 <span id="modalProjectCount" class="text-cyan-300 font-bold font-mono">0</span> 项</div>
-                <button id="resetProjectFilterBtn" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg border border-slate-700 transition-colors flex items-center gap-1.5">
+                <button id="resetProjectFilterBtn" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg border border-slate-700 transition-colors flex items-center gap-1.5 cursor-pointer">
                     <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> 重置筛选
                 </button>
             </div>
@@ -347,7 +365,7 @@
                         <p class="text-xs text-slate-300">查看技改项目完整信息与字段（含现状说明与改善方案），支持表头多维筛选</p>
                     </div>
                 </div>
-                <button id="closePlanModalBtn" class="text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 p-2 rounded-xl transition-colors border border-slate-700">
+                <button id="closePlanModalBtn" class="text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 p-2 rounded-xl transition-colors border border-slate-700 cursor-pointer">
                     <i data-lucide="x" class="w-5 h-5"></i>
                 </button>
             </div>
@@ -410,7 +428,7 @@
             
             <div class="pt-4 mt-2 flex justify-between items-center text-xs text-slate-300">
                 <div>数据统计：共显示 <span id="modalPlanCount" class="text-indigo-300 font-bold font-mono">0</span> 项</div>
-                <button id="resetPlanFilterBtn" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg border border-slate-700 transition-colors flex items-center gap-1.5">
+                <button id="resetPlanFilterBtn" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg border border-slate-700 transition-colors flex items-center gap-1.5 cursor-pointer">
                     <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> 重置筛选
                 </button>
             </div>
@@ -419,7 +437,7 @@
 
     <!-- 资产支出明细数据表 - 详细列表弹窗框 -->
     <div id="assetModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[10000] hidden flex items-center justify-center p-4">
-        <div class="panel-emerald w-full max-w-6xl rounded-2xl p-6 shadow-2xl bg-slate-900/95 flex flex-col max-h-[85vh]">
+        <div class="panel-emerald w-full max-w-[95vw] rounded-2xl p-6 shadow-2xl bg-slate-900/95 flex flex-col max-h-[85vh]">
             <div class="flex justify-between items-center pb-4 mb-4 border-b border-slate-700/80">
                 <div class="flex items-center gap-2.5">
                     <div class="p-2 bg-emerald-500/20 text-emerald-400 rounded-lg border border-emerald-500/30">
@@ -430,16 +448,27 @@
                         <p class="text-xs text-slate-300">查看资产支出全部明细数据与字段，支持表头分列筛选</p>
                     </div>
                 </div>
-                <button id="closeAssetModalBtn" class="text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 p-2 rounded-xl transition-colors border border-slate-700">
+                <button id="closeAssetModalBtn" class="text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 p-2 rounded-xl transition-colors border border-slate-700 cursor-pointer">
                     <i data-lucide="x" class="w-5 h-5"></i>
                 </button>
             </div>
 
             <div class="flex-1 overflow-auto custom-scrollbar border border-slate-800 rounded-xl">
-                <table class="w-full text-left text-sm text-slate-300 border-collapse min-w-[950px]">
+                <table class="w-full text-left text-sm text-slate-300 border-collapse table-fixed">
+                    <colgroup>
+                        <col style="width: 5%;">
+                        <col style="width: 20%;">
+                        <col style="width: 11%;">
+                        <col style="width: 11%;">
+                        <col style="width: 11%;">
+                        <col style="width: 11%;">
+                        <col style="width: 11%;">
+                        <col style="width: 10%;">
+                        <col style="width: 10%;">
+                    </colgroup>
                     <thead class="bg-slate-900/95 text-xs text-slate-300 sticky top-0 z-10 backdrop-blur-md border-b border-slate-700">
                         <tr>
-                            <th class="p-3 font-semibold text-center w-12 text-slate-400">#</th>
+                            <th class="p-3 font-semibold text-center text-slate-400">#</th>
                             <th class="p-3 font-semibold">
                                 <div class="flex flex-col gap-1.5">
                                     <span class="text-slate-200">资产名称</span>
@@ -466,7 +495,7 @@
                             <th class="p-3 font-semibold text-right">实际支出(元)</th>
                             <th class="p-3 font-semibold text-right">偏差/执行率</th>
                             <th class="p-3 font-semibold text-center">入账月份</th>
-                            <th class="p-3 font-semibold text-center w-28">
+                            <th class="p-3 font-semibold text-center">
                                 <div class="flex flex-col gap-1.5">
                                     <span class="text-slate-200">预算项目</span>
                                     <select id="filterAssetStatus" class="w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-xs text-slate-200 focus:outline-none focus:border-emerald-400">
@@ -482,7 +511,7 @@
             
             <div class="pt-4 mt-2 flex justify-between items-center text-xs text-slate-300">
                 <div>数据统计：共显示 <span id="modalAssetCount" class="text-emerald-300 font-bold font-mono">0</span> 项</div>
-                <button id="resetAssetFilterBtn" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg border border-slate-700 transition-colors flex items-center gap-1.5">
+                <button id="resetAssetFilterBtn" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg border border-slate-700 transition-colors flex items-center gap-1.5 cursor-pointer">
                     <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> 重置筛选
                 </button>
             </div>
@@ -491,6 +520,26 @@
 
     <script>
         let projectsData = [], planProjectsData = [], assetData = [];
+
+        // 密码验证逻辑（默认密码：8888，可在此处修改）
+        function checkPassword(e) {
+            e.preventDefault();
+            const pwdInput = document.getElementById('accessPassword').value;
+            const correctPassword = "8888"; // <-- 在此可更改您的访问密码
+            
+            if (pwdInput === correctPassword) {
+                const modal = document.getElementById('passwordModal');
+                modal.classList.add('opacity-0', 'transition-opacity', 'duration-300');
+                setTimeout(() => {
+                    modal.remove();
+                }, 300);
+            } else {
+                const errorTip = document.getElementById('passwordError');
+                errorTip.classList.remove('hidden');
+                document.getElementById('accessPassword').value = '';
+                document.getElementById('accessPassword').focus();
+            }
+        }
 
         function getFormattedDiff(item) {
             if (item.budget && item.actual) {
@@ -583,17 +632,17 @@
                 const statusBadge = item.status === '正常' ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' : 'bg-amber-500/20 text-amber-300 border-amber-500/30';
                 return `
                     <tr class="asset-row hover:bg-slate-800/60 transition-colors cursor-pointer flex items-center h-[48px] box-border" data-index="${index}">
-                        <td class="w-[22%] px-4 font-medium text-white flex items-center gap-2 truncate">
+                        <td class="w-[22%] px-3 font-medium text-white flex items-center gap-2 truncate">
                             <span class="w-2 h-2 rounded-full shrink-0 ${item.status === '正常' ? 'bg-cyan-400' : 'bg-amber-400'}"></span>
                             <span class="truncate">${item.name}</span>
                         </td>
-                        <td class="w-[10%] px-4 text-slate-300 truncate">${item.category}</td>
-                        <td class="w-[10%] px-4 text-slate-200 truncate">${item.dept}</td>
-                        <td class="w-[10%] px-4 font-mono text-right truncate">${item.budget}</td>
-                        <td class="w-[10%] px-4 font-mono text-right truncate">${item.actual}</td>
-                        <td class="w-[10%] px-4 font-mono text-right truncate ${diffClass}">${formattedDiff}</td>
-                        <td class="w-[10%] px-4 font-mono text-center text-slate-200 truncate">${item.month}</td>
-                        <td class="w-[17%] px-4 text-center truncate"><span class="px-2 py-0.5 text-xs rounded border ${statusBadge}">${item.status}</span></td>
+                        <td class="w-[10%] px-3 text-slate-300 truncate">${item.category}</td>
+                        <td class="w-[11%] px-3 text-slate-200 truncate">${item.dept}</td>
+                        <td class="w-[11%] px-3 font-mono text-right truncate">${item.budget}</td>
+                        <td class="w-[11%] px-3 font-mono text-right truncate">${item.actual}</td>
+                        <td class="w-[11%] px-3 font-mono text-right truncate ${diffClass}">${formattedDiff}</td>
+                        <td class="w-[10%] px-3 font-mono text-center text-slate-200 truncate">${item.month}</td>
+                        <td class="w-[14%] px-3 text-center truncate"><span class="px-2 py-0.5 text-xs rounded border ${statusBadge}">${item.status}</span></td>
                     </tr>`;
             };
             tbody.innerHTML = assetData.map((item, index) => buildRowHtml(item, index)).join('') + assetData.map((item, index) => buildRowHtml(item, index)).join('');
@@ -1015,7 +1064,7 @@
                 document.getElementById('planTtCategory').innerText = item.category;
                 document.getElementById('planTtStatus').innerText = item.status;
                 document.getElementById('planTtStatus').className = `text-[11px] px-2 py-0.5 rounded border font-mono font-medium ${getPlanStatusBadge(item.status)}`;
-                document.getElementById('planTtCurrent').innerText = item.currentStatus;
+                document.getElementById('planTtCurrent').innerText = item.currentStyle || item.currentStatus;
                 document.getElementById('planTtImprovement').innerText = item.improvement;
                 document.getElementById('planTtCost').innerText = `¥ ${item.cost} 万元`;
                 document.getElementById('planTtBenefit').innerText = `¥ ${item.benefit} 万元/年`;
