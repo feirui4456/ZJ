@@ -53,6 +53,16 @@
         .table-scroll-wrapper:hover .table-scroll-inner { animation-play-state: paused; }
 
         .custom-tooltip { pointer-events: none !important; transition: opacity 0.2s ease-out, top 0.05s ease-out, left 0.05s ease-out; will-change: top, left, opacity; z-index: 9999; }
+
+        /* ==================== 核心新增：悬停模块时其他模块变模糊效果 ==================== */
+        body:has(.interactive-module:hover) .interactive-module:not(:hover) {
+            filter: blur(6px);
+            opacity: 0.35;
+            transform: scale(0.99);
+        }
+        .interactive-module {
+            transition: filter 0.3s ease, opacity 0.3s ease, transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        }
     </style>
 </head>
 <body class="min-h-screen p-4 md:p-6 custom-scrollbar relative">
@@ -135,8 +145,8 @@
         </div>
     </div>
 
-    <!-- Header (使用蓝紫极光色) -->
-    <header class="panel-indigo rounded-xl p-4 mb-6 flex flex-col md:flex-row justify-between items-center gap-4 shadow-xl relative overflow-hidden">
+    <!-- Header (增加 interactive-module 类) -->
+    <header class="panel-indigo interactive-module rounded-xl p-4 mb-6 flex flex-col md:flex-row justify-between items-center gap-4 shadow-xl relative overflow-hidden">
         <div class="flex items-center gap-3.5 z-10">
             <div class="p-2.5 bg-slate-800/90 rounded-xl border border-indigo-500/40 text-indigo-400"><i data-lucide="building-2" class="w-6 h-6"></i></div>
             <div>
@@ -152,17 +162,17 @@
         <div class="aurora-bottom-bar"></div>
     </header>
 
-    <!-- KPI 区域 (四个卡片采用不同色彩背景区分) -->
+    <!-- KPI 区域 (每个卡片增加 interactive-module 类) -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <!-- 蓝调卡片 -->
-        <div class="panel-cyan p-5 rounded-xl flex items-center justify-between relative overflow-hidden group">
+        <div class="panel-cyan interactive-module p-5 rounded-xl flex items-center justify-between relative overflow-hidden group">
             <div>
                 <p class="text-sm font-medium text-cyan-200 flex items-center gap-1.5"><i data-lucide="wallet" class="w-4 h-4 text-cyan-300"></i> 年度项目总预算</p>
                 <h2 class="text-2xl font-bold text-white mt-2 font-mono">¥ <span id="kpiTotalBudget">--</span> <span id="kpiTotalBudgetUnit" class="text-base font-normal text-slate-300">亿元</span></h2>
             </div>
         </div>
         <!-- 琥珀橙调卡片 -->
-        <div class="panel-amber p-5 rounded-xl flex items-center justify-between relative overflow-hidden group">
+        <div class="panel-amber interactive-module p-5 rounded-xl flex items-center justify-between relative overflow-hidden group">
             <div>
                 <p class="text-sm font-medium text-amber-200 flex items-center gap-1.5"><i data-lucide="credit-card" class="w-4 h-4 text-amber-300"></i> 实际已支出</p>
                 <h2 class="text-2xl font-bold text-white mt-2 font-mono">¥ <span id="kpiActualSpend">--</span> <span id="kpiActualSpendUnit" class="text-base font-normal text-slate-300">亿元</span></h2>
@@ -170,7 +180,7 @@
             </div>
         </div>
         <!-- 翡翠绿调卡片 -->
-        <div class="panel-emerald p-5 rounded-xl flex items-center justify-between relative overflow-hidden group">
+        <div class="panel-emerald interactive-module p-5 rounded-xl flex items-center justify-between relative overflow-hidden group">
             <div>
                 <p class="text-sm font-medium text-emerald-200 flex items-center gap-1.5"><i data-lucide="activity" class="w-4 h-4 text-emerald-300"></i> 年度工程总体进度</p>
                 <h2 class="text-2xl font-bold text-white mt-2 font-mono" id="overallProgressText">--%</h2>
@@ -178,7 +188,7 @@
             </div>
         </div>
         <!-- 紫色调卡片 -->
-        <div class="panel-indigo p-5 rounded-xl flex items-center justify-between relative overflow-hidden group">
+        <div class="panel-indigo interactive-module p-5 rounded-xl flex items-center justify-between relative overflow-hidden group">
             <div>
                 <p class="text-sm font-medium text-indigo-200 flex items-center gap-1.5"><i data-lucide="shield-check" class="w-4 h-4 text-indigo-300"></i> 预警状态</p>
                 <h2 id="kpiWarningStatus" class="text-xl font-bold text-emerald-400 mt-2 flex items-center gap-2">--</h2>
@@ -187,16 +197,16 @@
         </div>
     </div>
 
-    <!-- Charts & Lists (中部三大主模块采用不一样的底色，等宽排列到一行) -->
+    <!-- Charts & Lists (中部三大主模块分别增加 interactive-module 类) -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6">
         <!-- 图表区：蓝青背景 -->
-        <div class="lg:col-span-4 panel-cyan p-5 rounded-xl flex flex-col justify-between">
+        <div class="lg:col-span-4 panel-cyan interactive-module p-5 rounded-xl flex flex-col justify-between">
             <div class="flex justify-between items-center mb-4"><h3 class="font-bold text-cyan-100 flex items-center gap-2"><i data-lucide="bar-chart-3" class="w-5 h-5 text-cyan-300"></i> 资金预算 vs 实际使用对比</h3></div>
             <div class="relative h-64 w-full"><canvas id="budgetChart"></canvas></div>
         </div>
         
         <!-- 施工进度与里程碑：翡翠绿底色 -->
-        <div class="lg:col-span-4 panel-emerald p-5 rounded-xl flex flex-col justify-between">
+        <div class="lg:col-span-4 panel-emerald interactive-module p-5 rounded-xl flex flex-col justify-between">
             <div class="flex justify-between items-center mb-4">
                 <h3 class="font-bold text-emerald-100 flex items-center gap-2"><i data-lucide="file-check-2" class="w-5 h-5 text-emerald-300"></i> 施工进度与里程碑</h3>
                 <button id="openProjectModalBtn" class="text-xs text-emerald-200 hover:text-white bg-emerald-500/20 hover:bg-emerald-500/40 border border-emerald-500/40 px-2.5 py-1 rounded-md transition-all flex items-center gap-1 cursor-pointer">
@@ -207,7 +217,7 @@
         </div>
 
         <!-- 26-27年规划技改项目：靛紫背景 -->
-        <div class="lg:col-span-4 panel-indigo p-5 rounded-xl flex flex-col justify-between">
+        <div class="lg:col-span-4 panel-indigo interactive-module p-5 rounded-xl flex flex-col justify-between">
             <div class="flex justify-between items-center mb-4">
                 <h3 class="font-bold text-indigo-100 flex items-center gap-2"><i data-lucide="list-todo" class="w-5 h-5 text-indigo-300"></i>26-27年规划技改项目</h3>
                 <button id="openPlanModalBtn" class="text-xs text-indigo-200 hover:text-white bg-indigo-500/20 hover:bg-indigo-500/40 border border-indigo-500/40 px-2.5 py-1 rounded-md transition-all flex items-center gap-1 cursor-pointer">
@@ -218,8 +228,8 @@
         </div>
     </div>
 
-    <!-- Table 底部资产明细表：深色科技石墨蓝背景 -->
-    <div class="panel-slate p-5 rounded-xl">
+    <!-- Table 底部资产明细表：增加 interactive-module 类 -->
+    <div class="panel-slate interactive-module p-5 rounded-xl">
         <div class="flex justify-between items-center mb-4">
             <h3 class="font-bold text-slate-100 flex items-center gap-2"><i data-lucide="table" class="w-5 h-5 text-sky-400"></i> 资产支出明细数据表</h3>
             <div class="flex items-center gap-3">
