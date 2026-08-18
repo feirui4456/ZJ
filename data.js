@@ -8,7 +8,7 @@ window.dashboardData = {
   "kpi": {
     "totalBudget": "1.3",
     "totalBudgetUnit": "亿元",
-    "actualSpend": "0.58",
+    "actualSpend": "0.59",
     "actualSpendUnit": "亿元",
     "executionRate": "0.44",
     "overallProgress": 65,
