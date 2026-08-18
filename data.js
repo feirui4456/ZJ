@@ -912,7 +912,7 @@ window.dashboardData = {
     {
       "name": "关于苏州顶津配电房空调汰换申请事宜",
       "progress": "2026-06-05",
-      "status": "未开工未完成",
+      "status": "已开工未完成",
       "dept": "厂务",
       "cost": "29",
       "supplier": "苏州聚划算电器有限公司",
