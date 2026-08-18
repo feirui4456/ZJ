@@ -1272,7 +1272,7 @@ window.dashboardData = {
       "cost": "52",
       "endTime": "2027-06-30",
       "progressDesc": "签呈已核准，改造件已到货，待找机会施工",
-      "manager": "刘传海、张军委"
+      "manager": "刘传海"
     },
     {
       "name": "330连线设备拆除",
