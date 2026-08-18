@@ -187,10 +187,10 @@
         </div>
     </div>
 
-    <!-- Charts & Lists (中部三大主模块采用不一样的底色) -->
+    <!-- Charts & Lists (中部三大主模块采用不一样的底色，等宽排列到一行) -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6">
         <!-- 图表区：蓝青背景 -->
-        <div class="lg:col-span-5 panel-cyan p-5 rounded-xl flex flex-col justify-between">
+        <div class="lg:col-span-4 panel-cyan p-5 rounded-xl flex flex-col justify-between">
             <div class="flex justify-between items-center mb-4"><h3 class="font-bold text-cyan-100 flex items-center gap-2"><i data-lucide="bar-chart-3" class="w-5 h-5 text-cyan-300"></i> 资金预算 vs 实际使用对比</h3></div>
             <div class="relative h-64 w-full"><canvas id="budgetChart"></canvas></div>
         </div>
@@ -207,7 +207,7 @@
         </div>
 
         <!-- 26-27年规划技改项目：靛紫背景 -->
-        <div class="lg:col-span-3 panel-indigo p-5 rounded-xl flex flex-col justify-between">
+        <div class="lg:col-span-4 panel-indigo p-5 rounded-xl flex flex-col justify-between">
             <div class="flex justify-between items-center mb-4">
                 <h3 class="font-bold text-indigo-100 flex items-center gap-2"><i data-lucide="list-todo" class="w-5 h-5 text-indigo-300"></i>26-27年规划技改项目</h3>
                 <button id="openPlanModalBtn" class="text-xs text-indigo-200 hover:text-white bg-indigo-500/20 hover:bg-indigo-500/40 border border-indigo-500/40 px-2.5 py-1 rounded-md transition-all flex items-center gap-1 cursor-pointer">
