@@ -1187,7 +1187,7 @@ window.dashboardData = {
       "benefit": "55",
       "endTime": "2027-06-30",
       "progressDesc": "方案规划中",
-      "manager": "刘传海、张军委、杨华超"
+      "manager": "刘传海、杨华超"
     },
     {
       "name": "防错系统及自动化搬运",
@@ -1211,7 +1211,7 @@ window.dashboardData = {
       "benefit": "320",
       "endTime": "2027-06-30",
       "progressDesc": "方案已完成，待报备总部协助规划",
-      "manager": "刘传海、张军委"
+      "manager": "刘传海"
     },
     {
       "name": "机器人投物料",
@@ -1292,7 +1292,7 @@ window.dashboardData = {
       "improvement": "增加水处理系统，处理后的水回收利用",
       "endTime": "2027-06-30",
       "progressDesc": "现场调研完成，方案已交总部立项",
-      "manager": "刘彬、张军委、刘传海"
+      "manager": "刘彬、刘传海"
     },
     {
       "name": "高压机联动集控",
