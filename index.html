@@ -54,18 +54,50 @@
 
         .custom-tooltip { pointer-events: none !important; transition: opacity 0.2s ease-out, top 0.05s ease-out, left 0.05s ease-out; will-change: top, left, opacity; z-index: 9999; }
 
-        /* ==================== 核心新增：悬停模块时其他模块变模糊效果 ==================== */
+        /* ==================== 优化：霓虹光标跟随特效容器与光晕样式 ==================== */
+        .neon-wrapper {
+            position: relative;
+            overflow-x: hidden;
+        }
+        .neon-glow {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 350px; /* 调整光晕的尺寸至更精致的大小 */
+            height: 350px;
+            background: radial-gradient(circle, rgba(56, 189, 248, 0.15) 0%, rgba(59, 130, 246, 0.05) 40%, transparent 70%);
+            transform: translate3d(0, 0, 0) translate(-50%, -50%); /* 使用 translate3d 开启 GPU 硬件加速 */
+            pointer-events: none;
+            z-index: 0;
+            transition: opacity 0.3s;
+            opacity: 0;
+            will-change: transform;
+        }
+        .neon-wrapper:hover .neon-glow { opacity: 1; }
+
+        /* ==================== 悬浮模块高亮、立体浮动及模糊效果 ==================== */
         body:has(.interactive-module:hover) .interactive-module:not(:hover) {
             filter: blur(6px);
             opacity: 0.35;
             transform: scale(0.99);
         }
         .interactive-module {
-            transition: filter 0.3s ease, opacity 0.3s ease, transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            z-index: 1;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.3s ease, opacity 0.3s ease;
+        }
+        .interactive-module:hover {
+            transform: translateY(-6px) scale(1.01);
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.6), 0 0 25px rgba(56, 189, 248, 0.4);
+            border-color: rgba(56, 189, 248, 0.8);
+            z-index: 10;
         }
     </style>
 </head>
-<body class="min-h-screen p-4 md:p-6 custom-scrollbar relative">
+<body class="min-h-screen p-4 md:p-6 custom-scrollbar relative neon-wrapper">
+
+    <!-- 新增：独立光晕跟随元素 -->
+    <div class="neon-glow" id="neonGlow"></div>
 
     <!-- 密码验证遮罩层 -->
     <div id="passwordModal" class="fixed inset-0 bg-slate-950/95 backdrop-blur-xl z-[99999] flex items-center justify-center p-4">
@@ -145,7 +177,7 @@
         </div>
     </div>
 
-    <!-- Header (增加 interactive-module 类) -->
+    <!-- Header -->
     <header class="panel-indigo interactive-module rounded-xl p-4 mb-6 flex flex-col md:flex-row justify-between items-center gap-4 shadow-xl relative overflow-hidden">
         <div class="flex items-center gap-3.5 z-10">
             <div class="p-2.5 bg-slate-800/90 rounded-xl border border-indigo-500/40 text-indigo-400"><i data-lucide="building-2" class="w-6 h-6"></i></div>
@@ -162,16 +194,14 @@
         <div class="aurora-bottom-bar"></div>
     </header>
 
-    <!-- KPI 区域 (每个卡片增加 interactive-module 类) -->
+    <!-- KPI 区域 -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <!-- 蓝调卡片 -->
         <div class="panel-cyan interactive-module p-5 rounded-xl flex items-center justify-between relative overflow-hidden group">
             <div>
                 <p class="text-sm font-medium text-cyan-200 flex items-center gap-1.5"><i data-lucide="wallet" class="w-4 h-4 text-cyan-300"></i> 年度项目总预算</p>
                 <h2 class="text-2xl font-bold text-white mt-2 font-mono">¥ <span id="kpiTotalBudget">--</span> <span id="kpiTotalBudgetUnit" class="text-base font-normal text-slate-300">亿元</span></h2>
             </div>
         </div>
-        <!-- 琥珀橙调卡片 -->
         <div class="panel-amber interactive-module p-5 rounded-xl flex items-center justify-between relative overflow-hidden group">
             <div>
                 <p class="text-sm font-medium text-amber-200 flex items-center gap-1.5"><i data-lucide="credit-card" class="w-4 h-4 text-amber-300"></i> 实际已支出</p>
@@ -179,7 +209,6 @@
                 <span id="kpiExecutionRate" class="inline-block mt-1 text-xs px-2 py-0.5 bg-amber-500/30 text-amber-200 border border-amber-500/40 rounded font-mono">执行率 --%</span>
             </div>
         </div>
-        <!-- 翡翠绿调卡片 -->
         <div class="panel-emerald interactive-module p-5 rounded-xl flex items-center justify-between relative overflow-hidden group">
             <div>
                 <p class="text-sm font-medium text-emerald-200 flex items-center gap-1.5"><i data-lucide="activity" class="w-4 h-4 text-emerald-300"></i> 年度工程总体进度</p>
@@ -187,7 +216,6 @@
                 <div class="w-32 bg-slate-800/80 h-2 rounded-full mt-2 overflow-hidden border border-emerald-500/30"><div id="overallProgressBar" class="bg-emerald-400 h-full rounded-full" style="width: 0%;"></div></div>
             </div>
         </div>
-        <!-- 紫色调卡片 -->
         <div class="panel-indigo interactive-module p-5 rounded-xl flex items-center justify-between relative overflow-hidden group">
             <div>
                 <p class="text-sm font-medium text-indigo-200 flex items-center gap-1.5"><i data-lucide="shield-check" class="w-4 h-4 text-indigo-300"></i> 预警状态</p>
@@ -197,15 +225,13 @@
         </div>
     </div>
 
-    <!-- Charts & Lists (中部三大主模块分别增加 interactive-module 类) -->
+    <!-- Charts & Lists -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6">
-        <!-- 图表区：蓝青背景 -->
         <div class="lg:col-span-4 panel-cyan interactive-module p-5 rounded-xl flex flex-col justify-between">
             <div class="flex justify-between items-center mb-4"><h3 class="font-bold text-cyan-100 flex items-center gap-2"><i data-lucide="bar-chart-3" class="w-5 h-5 text-cyan-300"></i> 资金预算 vs 实际使用对比</h3></div>
             <div class="relative h-64 w-full"><canvas id="budgetChart"></canvas></div>
         </div>
         
-        <!-- 施工进度与里程碑：翡翠绿底色 -->
         <div class="lg:col-span-4 panel-emerald interactive-module p-5 rounded-xl flex flex-col justify-between">
             <div class="flex justify-between items-center mb-4">
                 <h3 class="font-bold text-emerald-100 flex items-center gap-2"><i data-lucide="file-check-2" class="w-5 h-5 text-emerald-300"></i> 施工进度与里程碑</h3>
@@ -216,7 +242,6 @@
             <div class="scroll-wrapper cursor-pointer"><div class="scroll-inner gap-3.5" id="projectScrollContainer"></div></div>
         </div>
 
-        <!-- 26-27年规划技改项目：靛紫背景 -->
         <div class="lg:col-span-4 panel-indigo interactive-module p-5 rounded-xl flex flex-col justify-between">
             <div class="flex justify-between items-center mb-4">
                 <h3 class="font-bold text-indigo-100 flex items-center gap-2"><i data-lucide="list-todo" class="w-5 h-5 text-indigo-300"></i>26-27年规划技改项目</h3>
@@ -228,7 +253,7 @@
         </div>
     </div>
 
-    <!-- Table 底部资产明细表：增加 interactive-module 类 -->
+    <!-- Table 底部资产明细表 -->
     <div class="panel-slate interactive-module p-5 rounded-xl">
         <div class="flex justify-between items-center mb-4">
             <h3 class="font-bold text-slate-100 flex items-center gap-2"><i data-lucide="table" class="w-5 h-5 text-sky-400"></i> 资产支出明细数据表</h3>
@@ -240,10 +265,8 @@
             </div>
         </div>
         
-        <!-- 表格固定表头 + 动态5行自动滚动内容 -->
         <div class="w-full overflow-x-auto custom-scrollbar">
             <div class="min-w-[1300px]">
-                <!-- 表格固定 -->
                 <table class="w-full text-left text-sm text-slate-300 table-fixed">
                     <thead class="bg-slate-900/90 text-xs text-slate-300 uppercase border-b border-slate-700 block">
                         <tr class="flex items-center h-10">
@@ -259,7 +282,6 @@
                     </thead>
                 </table>
 
-                <!-- 滚动区域：恰好显示5行 -->
                 <div class="table-scroll-wrapper">
                     <table class="w-full text-left text-sm text-slate-300 table-fixed">
                         <tbody class="table-scroll-inner block divide-y divide-slate-800" id="assetTableBody"></tbody>
@@ -272,77 +294,46 @@
     <!-- 施工进度与里程碑 - 详细列表弹窗框 -->
     <div id="projectModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[10000] hidden flex items-center justify-center p-4">
         <div class="panel-cyan w-full max-w-[95vw] rounded-2xl p-6 shadow-2xl bg-slate-900/95 flex flex-col max-h-[85vh]">
-            <!-- 弹窗标题栏 -->
             <div class="flex justify-between items-center pb-4 mb-4 border-b border-slate-700/80">
                 <div class="flex items-center gap-2.5">
-                    <div class="p-2 bg-cyan-500/20 text-cyan-400 rounded-lg border border-cyan-500/30">
-                        <i data-lucide="file-check-2" class="w-5 h-5"></i>
-                    </div>
+                    <div class="p-2 bg-cyan-500/20 text-cyan-400 rounded-lg border border-cyan-500/30"><i data-lucide="file-check-2" class="w-5 h-5"></i></div>
                     <div>
                         <h3 class="text-lg font-bold text-white">施工进度与里程碑明细表</h3>
                         <p class="text-xs text-slate-300">查看工程项目完整进度与字段信息，支持表头多维筛选</p>
                     </div>
                 </div>
-                <button id="closeProjectModalBtn" class="text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 p-2 rounded-xl transition-colors border border-slate-700 cursor-pointer">
-                    <i data-lucide="x" class="w-5 h-5"></i>
-                </button>
+                <button id="closeProjectModalBtn" class="text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 p-2 rounded-xl transition-colors border border-slate-700 cursor-pointer"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
 
-            <!-- 表格区域 -->
             <div class="flex-1 overflow-auto custom-scrollbar border border-slate-800 rounded-xl">
                 <table class="w-full text-left text-sm text-slate-300 border-collapse min-w-[1300px]">
                     <thead class="bg-slate-900/95 text-xs text-slate-300 sticky top-0 z-10 backdrop-blur-md border-b border-slate-700">
                         <tr>
                             <th class="p-3 font-semibold text-center w-12 text-slate-400">#</th>
                             <th class="p-3 font-semibold w-48">
-                                <div class="flex flex-col gap-1.5">
-                                    <span class="text-slate-200">项目名称</span>
-                                    <input type="text" id="filterProjectName" placeholder="筛选项目..." class="w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-xs text-slate-200 focus:outline-none focus:border-cyan-400">
-                                </div>
+                                <div class="flex flex-col gap-1.5"><span class="text-slate-200">项目名称</span><input type="text" id="filterProjectName" placeholder="筛选项目..." class="w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-xs text-slate-200 focus:outline-none focus:border-cyan-400"></div>
                             </th>
                             <th class="p-3 font-semibold w-32">
-                                <div class="flex flex-col gap-1.5">
-                                    <span class="text-slate-200">所属部门</span>
-                                    <select id="filterProjectDept" class="w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-xs text-slate-200 focus:outline-none focus:border-cyan-400">
-                                        <option value="">全部部门</option>
-                                    </select>
-                                </div>
+                                <div class="flex flex-col gap-1.5"><span class="text-slate-200">所属部门</span><select id="filterProjectDept" class="w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-xs text-slate-200 focus:outline-none focus:border-cyan-400"><option value="">全部部门</option></select></div>
                             </th>
                             <th class="p-3 font-semibold text-right w-28">项目总价（万元）</th>
                             <th class="p-3 font-semibold w-36">
-                                <div class="flex flex-col gap-1.5">
-                                    <span class="text-slate-200">合作供应商</span>
-                                    <input type="text" id="filterProjectSupplier" placeholder="筛选供应商..." class="w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-xs text-slate-200 focus:outline-none focus:border-cyan-400">
-                                </div>
+                                <div class="flex flex-col gap-1.5"><span class="text-slate-200">合作供应商</span><input type="text" id="filterProjectSupplier" placeholder="筛选供应商..." class="w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-xs text-slate-200 focus:outline-none focus:border-cyan-400"></div>
                             </th>
                             <th class="p-3 font-semibold w-24">
-                                <div class="flex flex-col gap-1.5">
-                                    <span class="text-slate-200">负责人</span>
-                                    <input type="text" id="filterProjectManager" placeholder="筛选负责人..." class="w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-xs text-slate-200 focus:outline-none focus:border-cyan-400">
-                                </div>
+                                <div class="flex flex-col gap-1.5"><span class="text-slate-200">负责人</span><input type="text" id="filterProjectManager" placeholder="筛选负责人..." class="w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-xs text-slate-200 focus:outline-none focus:border-cyan-400"></div>
                             </th>
                             <th class="p-3 font-semibold w-36">开始时间</th>
                             <th class="p-3 font-semibold w-32">
-                                <div class="flex flex-col gap-1.5">
-                                    <span class="text-slate-200">维修费/固定资产</span>
-                                    <select id="filterProjectCategory" class="w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-xs text-slate-200 focus:outline-none focus:border-cyan-400">
-                                        <option value="">全部类型</option>
-                                    </select>
-                                </div>
+                                <div class="flex flex-col gap-1.5"><span class="text-slate-200">维修费/固定资产</span><select id="filterProjectCategory" class="w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-xs text-slate-200 focus:outline-none focus:border-cyan-400"><option value="">全部类型</option></select></div>
                             </th>
                             <th class="p-3 font-semibold w-48">备注</th>
                             <th class="p-3 font-semibold text-center w-28">
-                                <div class="flex flex-col gap-1.5">
-                                    <span class="text-slate-200">状态</span>
-                                    <select id="filterProjectStatus" class="w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-xs text-slate-200 focus:outline-none focus:border-cyan-400">
-                                        <option value="">全部状态</option>
-                                    </select>
-                                </div>
+                                <div class="flex flex-col gap-1.5"><span class="text-slate-200">状态</span><select id="filterProjectStatus" class="w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-xs text-slate-200 focus:outline-none focus:border-cyan-400"><option value="">全部状态</option></select></div>
                             </th>
                         </tr>
                     </thead>
                     <tbody id="modalProjectTableBody" class="divide-y divide-slate-800/80 bg-slate-950/40"></tbody>
-                    <!-- 动态加总行 -->
                     <tfoot class="bg-slate-900/90 sticky bottom-0 z-10 border-t border-slate-700 font-semibold text-slate-200">
                         <tr>
                             <td colspan="3" class="p-3 text-right">筛选合计 / 总计：</td>
@@ -355,9 +346,7 @@
             
             <div class="pt-4 mt-2 flex justify-between items-center text-xs text-slate-300">
                 <div>数据统计：共显示 <span id="modalProjectCount" class="text-cyan-300 font-bold font-mono">0</span> 项</div>
-                <button id="resetProjectFilterBtn" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg border border-slate-700 transition-colors flex items-center gap-1.5 cursor-pointer">
-                    <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> 重置筛选
-                </button>
+                <button id="resetProjectFilterBtn" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg border border-slate-700 transition-colors flex items-center gap-1.5 cursor-pointer"><i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> 重置筛选</button>
             </div>
         </div>
     </div>
@@ -367,69 +356,32 @@
         <div class="panel-indigo w-full max-w-[95vw] rounded-2xl p-6 shadow-2xl bg-slate-900/95 flex flex-col max-h-[85vh]">
             <div class="flex justify-between items-center pb-4 mb-4 border-b border-slate-700/80">
                 <div class="flex items-center gap-2.5">
-                    <div class="p-2 bg-indigo-500/20 text-indigo-400 rounded-lg border border-indigo-500/30">
-                        <i data-lucide="list-todo" class="w-5 h-5"></i>
-                    </div>
+                    <div class="p-2 bg-indigo-500/20 text-indigo-400 rounded-lg border border-indigo-500/30"><i data-lucide="list-todo" class="w-5 h-5"></i></div>
                     <div>
                         <h3 class="text-lg font-bold text-white">27年规划技改项目明细表</h3>
                         <p class="text-xs text-slate-300">查看技改项目完整信息与字段（含现状说明与改善方案），支持表头多维筛选</p>
                     </div>
                 </div>
-                <button id="closePlanModalBtn" class="text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 p-2 rounded-xl transition-colors border border-slate-700 cursor-pointer">
-                    <i data-lucide="x" class="w-5 h-5"></i>
-                </button>
+                <button id="closePlanModalBtn" class="text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 p-2 rounded-xl transition-colors border border-slate-700 cursor-pointer"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
 
             <div class="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar border border-slate-800 rounded-xl">
                 <table class="w-full text-left text-xs text-slate-300 border-collapse table-fixed">
                     <colgroup>
-                        <col style="width: 4%;">
-                        <col style="width: 12%;">
-                        <col style="width: 8%;">
-                        <col style="width: 18%;">
-                        <col style="width: 18%;">
-                        <col style="width: 8%;">
-                        <col style="width: 8%;">
-                        <col style="width: 8%;">
-                        <col style="width: 8%;">
-                        <col style="width: 8%;">
+                        <col style="width: 4%;"><col style="width: 12%;"><col style="width: 8%;"><col style="width: 18%;"><col style="width: 18%;"><col style="width: 8%;"><col style="width: 8%;"><col style="width: 8%;"><col style="width: 8%;"><col style="width: 8%;">
                     </colgroup>
                     <thead class="bg-slate-900/95 text-xs text-slate-300 sticky top-0 z-10 backdrop-blur-md border-b border-slate-700">
                         <tr>
                             <th class="p-2.5 font-semibold text-center text-slate-400">#</th>
-                            <th class="p-2.5 font-semibold">
-                                <div class="flex flex-col gap-1">
-                                    <span>项目名称</span>
-                                    <input type="text" id="filterPlanName" placeholder="筛选..." class="w-full px-1.5 py-0.5 bg-slate-950 border border-slate-700 rounded text-[11px] text-slate-200 focus:outline-none focus:border-indigo-400">
-                                </div>
-                            </th>
-                            <th class="p-2.5 font-semibold">
-                                <div class="flex flex-col gap-1">
-                                    <span>分类</span>
-                                    <select id="filterPlanCategory" class="w-full px-1.5 py-0.5 bg-slate-950 border border-slate-700 rounded text-[11px] text-slate-200 focus:outline-none focus:border-indigo-400">
-                                        <option value="">全部</option>
-                                    </select>
-                                </div>
-                            </th>
+                            <th class="p-2.5 font-semibold"><div class="flex flex-col gap-1"><span>项目名称</span><input type="text" id="filterPlanName" placeholder="筛选..." class="w-full px-1.5 py-0.5 bg-slate-950 border border-slate-700 rounded text-[11px] text-slate-200 focus:outline-none focus:border-indigo-400"></div></th>
+                            <th class="p-2.5 font-semibold"><div class="flex flex-col gap-1"><span>分类</span><select id="filterPlanCategory" class="w-full px-1.5 py-0.5 bg-slate-950 border border-slate-700 rounded text-[11px] text-slate-200 focus:outline-none focus:border-indigo-400"><option value="">全部</option></select></div></th>
                             <th class="p-2.5 font-semibold">现状说明</th>
                             <th class="p-2.5 font-semibold">改善方案</th>
                             <th class="p-2.5 font-semibold text-right">预估费用</th>
                             <th class="p-2.5 font-semibold text-right">年效益</th>
                             <th class="p-2.5 font-semibold text-center">完成</th>
-                            <th class="p-2.5 font-semibold">
-                                <div class="flex flex-col gap-1">
-                                    <span>责任人</span>
-                                    <input type="text" id="filterPlanManager" placeholder="筛选..." class="w-full px-1.5 py-0.5 bg-slate-950 border border-slate-700 rounded text-[11px] text-slate-200 focus:outline-none focus:border-indigo-400">
-                                </div>
-                            </th>
-                            <th class="p-2.5 font-semibold text-center">
-                                <div class="flex flex-col gap-1">
-                                    <span>状态</span>
-                                    <select id="filterPlanStatus" class="w-full px-1.5 py-0.5 bg-slate-950 border border-slate-700 rounded text-[11px] text-slate-200 focus:outline-none focus:border-indigo-400">
-                                        <option value="">全部</option>
-                                    </select>
-                                </div>
-                            </th>
+                            <th class="p-2.5 font-semibold"><div class="flex flex-col gap-1"><span>责任人</span><input type="text" id="filterPlanManager" placeholder="筛选..." class="w-full px-1.5 py-0.5 bg-slate-950 border border-slate-700 rounded text-[11px] text-slate-200 focus:outline-none focus:border-indigo-400"></div></th>
+                            <th class="p-2.5 font-semibold text-center"><div class="flex flex-col gap-1"><span>状态</span><select id="filterPlanStatus" class="w-full px-1.5 py-0.5 bg-slate-950 border border-slate-700 rounded text-[11px] text-slate-200 focus:outline-none focus:border-indigo-400"><option value="">全部</option></select></div></th>
                         </tr>
                     </thead>
                     <tbody id="modalPlanTableBody" class="divide-y divide-slate-800/80 bg-slate-950/40"></tbody>
@@ -438,9 +390,7 @@
             
             <div class="pt-4 mt-2 flex justify-between items-center text-xs text-slate-300">
                 <div>数据统计：共显示 <span id="modalPlanCount" class="text-indigo-300 font-bold font-mono">0</span> 项</div>
-                <button id="resetPlanFilterBtn" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg border border-slate-700 transition-colors flex items-center gap-1.5 cursor-pointer">
-                    <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> 重置筛选
-                </button>
+                <button id="resetPlanFilterBtn" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg border border-slate-700 transition-colors flex items-center gap-1.5 cursor-pointer"><i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> 重置筛选</button>
             </div>
         </div>
     </div>
@@ -450,69 +400,31 @@
         <div class="panel-emerald w-full max-w-[95vw] rounded-2xl p-6 shadow-2xl bg-slate-900/95 flex flex-col max-h-[85vh]">
             <div class="flex justify-between items-center pb-4 mb-4 border-b border-slate-700/80">
                 <div class="flex items-center gap-2.5">
-                    <div class="p-2 bg-emerald-500/20 text-emerald-400 rounded-lg border border-emerald-500/30">
-                        <i data-lucide="table" class="w-5 h-5"></i>
-                    </div>
+                    <div class="p-2 bg-emerald-500/20 text-emerald-400 rounded-lg border border-emerald-500/30"><i data-lucide="table" class="w-5 h-5"></i></div>
                     <div>
                         <h3 class="text-lg font-bold text-white">资产支出明细数据完整表</h3>
                         <p class="text-xs text-slate-300">查看资产支出全部明细数据与字段，支持表头分列筛选</p>
                     </div>
                 </div>
-                <button id="closeAssetModalBtn" class="text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 p-2 rounded-xl transition-colors border border-slate-700 cursor-pointer">
-                    <i data-lucide="x" class="w-5 h-5"></i>
-                </button>
+                <button id="closeAssetModalBtn" class="text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 p-2 rounded-xl transition-colors border border-slate-700 cursor-pointer"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
 
             <div class="flex-1 overflow-auto custom-scrollbar border border-slate-800 rounded-xl">
                 <table class="w-full text-left text-sm text-slate-300 border-collapse table-fixed">
                     <colgroup>
-                        <col style="width: 5%;">
-                        <col style="width: 20%;">
-                        <col style="width: 11%;">
-                        <col style="width: 11%;">
-                        <col style="width: 11%;">
-                        <col style="width: 11%;">
-                        <col style="width: 11%;">
-                        <col style="width: 10%;">
-                        <col style="width: 10%;">
+                        <col style="width: 5%;"><col style="width: 20%;"><col style="width: 11%;"><col style="width: 11%;"><col style="width: 11%;"><col style="width: 11%;"><col style="width: 11%;"><col style="width: 10%;"><col style="width: 10%;">
                     </colgroup>
                     <thead class="bg-slate-900/95 text-xs text-slate-300 sticky top-0 z-10 backdrop-blur-md border-b border-slate-700">
                         <tr>
                             <th class="p-3 font-semibold text-center text-slate-400">#</th>
-                            <th class="p-3 font-semibold">
-                                <div class="flex flex-col gap-1.5">
-                                    <span class="text-slate-200">资产名称</span>
-                                    <input type="text" id="filterAssetName" placeholder="筛选资产..." class="w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-xs text-slate-200 focus:outline-none focus:border-emerald-400">
-                                </div>
-                            </th>
-                            <th class="p-3 font-semibold">
-                                <div class="flex flex-col gap-1.5">
-                                    <span class="text-slate-200">分类</span>
-                                    <select id="filterAssetCategory" class="w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-xs text-slate-200 focus:outline-none focus:border-emerald-400">
-                                        <option value="">全部分类</option>
-                                    </select>
-                                </div>
-                            </th>
-                            <th class="p-3 font-semibold">
-                                <div class="flex flex-col gap-1.5">
-                                    <span class="text-slate-200">所属部门</span>
-                                    <select id="filterAssetDept" class="w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-xs text-slate-200 focus:outline-none focus:border-emerald-400">
-                                        <option value="">全部部门</option>
-                                    </select>
-                                </div>
-                            </th>
+                            <th class="p-3 font-semibold"><div class="flex flex-col gap-1.5"><span class="text-slate-200">资产名称</span><input type="text" id="filterAssetName" placeholder="筛选资产..." class="w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-xs text-slate-200 focus:outline-none focus:border-emerald-400"></div></th>
+                            <th class="p-3 font-semibold"><div class="flex flex-col gap-1.5"><span class="text-slate-200">分类</span><select id="filterAssetCategory" class="w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-xs text-slate-200 focus:outline-none focus:border-emerald-400"><option value="">全部分类</option></select></div></th>
+                            <th class="p-3 font-semibold"><div class="flex flex-col gap-1.5"><span class="text-slate-200">所属部门</span><select id="filterAssetDept" class="w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-xs text-slate-200 focus:outline-none focus:border-emerald-400"><option value="">全部部门</option></select></div></th>
                             <th class="p-3 font-semibold text-right">计划预算(元)</th>
                             <th class="p-3 font-semibold text-right">实际支出(元)</th>
                             <th class="p-3 font-semibold text-right">偏差/执行率</th>
                             <th class="p-3 font-semibold text-center">入账月份</th>
-                            <th class="p-3 font-semibold text-center">
-                                <div class="flex flex-col gap-1.5">
-                                    <span class="text-slate-200">预算项目</span>
-                                    <select id="filterAssetStatus" class="w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-xs text-slate-200 focus:outline-none focus:border-emerald-400">
-                                        <option value="">全部显示</option>
-                                    </select>
-                                </div>
-                            </th>
+                            <th class="p-3 font-semibold text-center"><div class="flex flex-col gap-1.5"><span class="text-slate-200">预算项目</span><select id="filterAssetStatus" class="w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-xs text-slate-200 focus:outline-none focus:border-emerald-400"><option value="">全部显示</option></select></div></th>
                         </tr>
                     </thead>
                     <tbody id="modalAssetTableBody" class="divide-y divide-slate-800/80 bg-slate-950/40"></tbody>
@@ -521,9 +433,7 @@
             
             <div class="pt-4 mt-2 flex justify-between items-center text-xs text-slate-300">
                 <div>数据统计：共显示 <span id="modalAssetCount" class="text-emerald-300 font-bold font-mono">0</span> 项</div>
-                <button id="resetAssetFilterBtn" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg border border-slate-700 transition-colors flex items-center gap-1.5 cursor-pointer">
-                    <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> 重置筛选
-                </button>
+                <button id="resetAssetFilterBtn" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg border border-slate-700 transition-colors flex items-center gap-1.5 cursor-pointer"><i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> 重置筛选</button>
             </div>
         </div>
     </div>
@@ -1053,6 +963,32 @@
             initAssetModalLogic();
 
             if (window.lucide) lucide.createIcons();
+
+            // ==================== 优化后的光标跟随逻辑 (requestAnimationFrame + translate3d) ====================
+            const neonGlow = document.getElementById('neonGlow');
+            let mouseX = -500, mouseY = -500;
+            let currentX = -500, currentY = -500;
+
+            document.addEventListener('mousemove', e => {
+                const wrapper = document.querySelector('.neon-wrapper');
+                if (!wrapper) return;
+                const rect = wrapper.getBoundingClientRect();
+                mouseX = e.clientX - rect.left;
+                mouseY = e.clientY - rect.top + window.scrollY;
+            });
+
+            function updateGlowPosition() {
+                if (neonGlow) {
+                    // 平滑插值计算（可根据手感调节系数，数值越大跟随越紧密）
+                    currentX += (mouseX - currentX) * 0.25;
+                    currentY += (mouseY - currentY) * 0.25;
+                    
+                    // 使用 translate3d 触发 GPU 加速，消除延迟与抖动感
+                    neonGlow.style.transform = `translate3d(${currentX}px, ${currentY}px, 0) translate(-50%, -50%)`;
+                }
+                requestAnimationFrame(updateGlowPosition);
+            }
+            requestAnimationFrame(updateGlowPosition);
 
             setupDelegatedTooltip('projectScrollContainer', '.project-item', 'projectTooltip', (index) => {
                 const item = projectsData[index]; if (!item) return;
