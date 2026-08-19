@@ -981,9 +981,9 @@ window.dashboardData = {
   ],
   "planProjectsData": [
     {
-      "name": "瓶胚直连扩展",
       "category": "自动化改善",
       "status": "未开始",
+      "name": "瓶胚直连扩展",
       "currentStatus": "目前只连吹瓶一线，利用率低",
       "improvement": "增加连吹瓶二线或改为AGV直供",
       "cost": "35",
@@ -993,9 +993,9 @@ window.dashboardData = {
       "manager": "赵春军"
     },
     {
-      "name": "直连补充瓶胚回温",
       "category": "品质改善",
       "status": "未开始",
+      "name": "直连补充瓶胚回温",
       "currentStatus": "1、直连瓶胚到达吹瓶机温度约40度（不加空调降温）\r\r\n2、补充瓶胚冬天温度较低，工艺不稳定（温差超10度以上）",
       "improvement": "建立回温房间，对补充瓶胚进行回温",
       "endTime": "2027-09-15",
@@ -1003,9 +1003,9 @@ window.dashboardData = {
       "manager": "刘传海、赵春军"
     },
     {
-      "name": "新增物料输送带",
       "category": "自动化改善",
       "status": "规划中",
+      "name": "新增物料输送带",
       "currentStatus": "六连包机移入车间后投料不方便",
       "improvement": "TP1/2线规划物料输送带",
       "endTime": "2027-12-20",
@@ -1013,9 +1013,9 @@ window.dashboardData = {
       "manager": "刘传海、杨硕"
     },
     {
-      "name": "汰换具备外箱覆膜功能的膜包机",
       "category": "自动化改善",
       "status": "规划中",
+      "name": "汰换具备外箱覆膜功能的膜包机",
       "currentStatus": "膜包效果较差，品质不达标；不具备外箱覆膜能力",
       "improvement": "汰换膜包机，增加输送带具备外箱覆膜功能",
       "cost": "107",
@@ -1024,39 +1024,40 @@ window.dashboardData = {
       "manager": "刘传海、乔欣欣"
     },
     {
-      "name": "水3线具备康水能力",
       "category": "排产优化",
       "status": "未开始",
+      "name": "水3线具备康水能力",
       "improvement": "具备1881瓶口550康水生产能力",
       "endTime": "2027-06-30",
       "progressDesc": "方案拟定中",
       "manager": "刘传海、王辉"
     },
     {
-      "name": "550纯水乐生产能力",
       "category": "排产优化",
       "status": "规划中",
+      "name": "550纯水乐生产能力",
       "currentStatus": "二线产能不足，四线康水有富裕产能",
       "improvement": "具备纯水乐生产能力",
       "endTime": "2027-06-30",
+      "progressDesc": "方案拟定中",
       "manager": "房亚军、刘传海、王辉"
     },
     {
-      "name": "调配冷凝水热能回收",
       "category": "节能降耗",
       "status": "采购中",
+      "name": "调配冷凝水热能回收",
       "currentStatus": "一、二车间目前排地沟，三车间自流回冷凝水主管道，有水锤",
       "improvement": "增加缓冲罐回，及增压泵回主管道",
       "cost": "65",
       "benefit": "30",
-      "endTime": "2027-06-30",
+      "endTime": "2027-01-30",
       "progressDesc": "招标作业中",
       "manager": "刘传海、王辉"
     },
     {
-      "name": "UHT冷凝水热能回收",
       "category": "节能降耗",
       "status": "规划中",
+      "name": "UHT冷凝水热能回收",
       "currentStatus": "目前排放地沟",
       "improvement": "回收利用",
       "cost": "25",
@@ -1066,9 +1067,9 @@ window.dashboardData = {
       "manager": "刘传海、王辉"
     },
     {
-      "name": "膜包机入口自动化换产",
       "category": "自动化改善",
       "status": "未开始",
+      "name": "膜包机入口自动化换产",
       "currentStatus": "散膜和外箱覆膜换产时间较长，而且入口调试稳定耗时耗力",
       "improvement": "增加升降装置",
       "cost": "15",
@@ -1077,21 +1078,21 @@ window.dashboardData = {
       "manager": "朱鹏鹏、李双"
     },
     {
-      "name": "增加自动加纸板机",
       "category": "自动化改善",
       "status": "采购中",
+      "name": "增加自动加纸板机",
       "currentStatus": "每天浪费2个劳务",
       "improvement": "增加自动加纸板机",
       "cost": "30",
       "benefit": "15",
-      "endTime": "2027-06-30",
+      "endTime": "2027-01-30",
       "progressDesc": "主机已核准，配套输送带及KHS对接信号等需要工厂自行规划",
       "manager": "杨华超"
     },
     {
-      "name": "小袋糖自动化",
       "category": "自动化改善",
       "status": "未开始",
+      "name": "小袋糖自动化",
       "currentStatus": "6条线人工倒糖劳务浪费较大",
       "improvement": "增加机械手设备",
       "cost": "220",
@@ -1101,9 +1102,9 @@ window.dashboardData = {
       "manager": "杨华超、刘传海"
     },
     {
-      "name": "AGV搬运",
       "category": "自动化改善",
       "status": "规划中",
+      "name": "AGV搬运",
       "currentStatus": "2台瓶胚机每天2人拉瓶胚/斑",
       "improvement": "利用3台AGV替代4人拉胚，每班保留1人套袋整理铁框",
       "cost": "40",
@@ -1113,44 +1114,32 @@ window.dashboardData = {
       "manager": "刘传海、杨华超"
     },
     {
-      "name": "调配冷凝水回收利用",
       "category": "节能降耗",
       "status": "未开始",
+      "name": "调配冷凝水回收利用",
       "currentStatus": "和生产线共用一根管道，小于生产线冷凝水压力，无法排出",
       "improvement": "管道改造，分开排放，淡季整改已规划，施工中，效果待验证",
       "cost": "8",
       "benefit": "10",
-      "endTime": "2027-06-30",
+      "endTime": "2027-01-30",
       "progressDesc": "立项已核准，招标作业中"
     },
     {
-      "name": "调配萃取冰水温度提升",
-      "category": "节能降耗",
-      "status": "施工中",
-      "currentStatus": "萃取需要从65-75度降低到17度左右，板换设计要求9度冰水才能达到，造成整体冰水浪费（每升高1度可以节省约3%的电能）",
-      "improvement": "增加冰水板换，提升冰水温度",
-      "cost": "51",
-      "benefit": "36",
-      "endTime": "2027-06-30",
-      "progressDesc": "立项签呈已完成，预计7月中旬到厂",
-      "manager": "刘传海、陈赏"
-    },
-    {
-      "name": "具备冰红、茉莉中包装生产能力",
       "category": "排产优化",
       "status": "未开始",
+      "name": "具备冰红、茉莉中包装生产能力",
       "currentStatus": "目前生产1L和330规格，2条热充都1L换产产能损失较大",
       "improvement": "增加中包装品项生产能力",
       "cost": "170",
       "benefit": "55",
       "endTime": "2027-06-30",
       "progressDesc": "方案规划中",
-      "manager": "刘传海、张军委、杨华超"
+      "manager": "刘传海、杨华超"
     },
     {
-      "name": "防错系统及自动化搬运",
       "category": "自动化改善",
       "status": "规划中",
+      "name": "防错系统及自动化搬运",
       "currentStatus": "新品多，工艺复杂，出错率增加",
       "improvement": "防错系统及自动化综合规划",
       "cost": "200",
@@ -1160,40 +1149,40 @@ window.dashboardData = {
       "manager": "蒋城、陈赏"
     },
     {
-      "name": "新增1台小UHT",
       "category": "节能降耗",
       "status": "规划中",
+      "name": "新增1台小UHT",
       "currentStatus": "前期新增小UHT无菌四线占用，无菌六线一直用大UHT，无菌五线及未来新增2.0品项",
       "improvement": "再新增两台台小UHT",
       "cost": "960",
       "benefit": "320",
       "endTime": "2027-06-30",
       "progressDesc": "方案已完成，待报备总部协助规划",
-      "manager": "刘传海、张军委"
+      "manager": "刘传海"
     },
     {
-      "name": "机器人投物料",
       "category": "自动化改善",
       "status": "未开始",
+      "name": "机器人投物料",
       "currentStatus": "1、二、三车间劳务投物料，且有投错风险\r\r\n2、劳务费用较高，而且不固定",
       "endTime": "2027-06-30",
       "progressDesc": "方案规划中",
       "manager": "黄朗朗"
     },
     {
-      "name": "瓶胚立体库",
       "category": "自动化改善",
       "status": "规划中",
+      "name": "瓶胚立体库",
       "currentStatus": "1、瓶胚库存能力不够，需要频繁移库；\r\r\n2、降温再加热浪费能源",
       "improvement": "建瓶胚立体库",
       "endTime": "2027-06-30",
-      "progressDesc": "已完成，问题点待持续改善",
+      "progressDesc": "方案规划中，问题点待持续改善",
       "manager": "刘传海、徐杨"
     },
     {
-      "name": "数采提升",
       "category": "自动化改善",
       "status": "未开始",
+      "name": "数采提升",
       "currentStatus": "水站、后段包装设备等无法自动采集，人工点检及调整控制",
       "improvement": "1、自行增加可采集的仪表\r\r\n2、和供应商一起开发采集系统",
       "endTime": "2027-06-30",
@@ -1201,41 +1190,41 @@ window.dashboardData = {
       "manager": "黄朗朗"
     },
     {
-      "name": "萃取新增板换改造",
       "category": "节能降耗",
       "status": "施工中",
+      "name": "萃取新增板换改造",
       "currentStatus": "萃取需要从65-75度降低到17度左右，板换设计要求9度冰水才能达到，造成整体冰水浪费（每升高1度可以节省约3%的电能）",
       "improvement": "增加冰水板换，提升冰水温度",
       "cost": "40",
       "benefit": "40",
-      "endTime": "2027-06-30",
-      "progressDesc": "立项已完成，招标作业中",
+      "endTime": "2026-09-30",
+      "progressDesc": "施工中",
       "manager": "刘传海、陈赏"
     },
     {
-      "name": "直连补充瓶胚回温",
       "category": "节能降耗",
       "status": "未开始",
+      "name": "直连补充瓶胚回温",
       "currentStatus": "1、直连瓶胚到达吹瓶机温度约40度（不加空调降温）\r\r\n2、补充瓶胚冬天温度较低，工艺不稳定（温差超10度以上）",
       "endTime": "2027-06-30",
       "progressDesc": "与热泵技术一起规划，方案已交规划部审核",
       "manager": "魏志忠、刘传海"
     },
     {
-      "name": "无菌3、4、6线在线糖度检测规划",
       "category": "节能降耗",
       "status": "施工中",
+      "name": "无菌3、4、6线在线糖度检测规划",
       "currentStatus": "人工检测浪费约1.4吨料液/次，无菌4、6线共计次CIP/年",
       "improvement": "增加在线检测糖度仪器",
       "cost": "52",
-      "endTime": "2027-06-30",
-      "progressDesc": "签呈已核准，改造件已到货，待找机会施工",
-      "manager": "刘传海、张军委"
+      "endTime": "2026-09-30",
+      "progressDesc": "调试中",
+      "manager": "刘传海"
     },
     {
-      "name": "330连线设备拆除",
       "category": "排产优化",
       "status": "未开始",
+      "name": "330连线设备拆除",
       "currentStatus": "设备占用大面积原料库，严重影响作业，计划10月份拆除",
       "improvement": "设备拆除，产能转至热充二线和无菌五线",
       "endTime": "2027-06-30",
@@ -1243,19 +1232,19 @@ window.dashboardData = {
       "manager": "刘传海、陈赏"
     },
     {
-      "name": "6条线洗瓶水回水",
       "category": "节能降耗",
-      "status": "未开始",
+      "status": "施工中",
+      "name": "6条线洗瓶水回水",
       "currentStatus": "目前洗瓶水直接排放，6条线全部生产每天约600吨",
       "improvement": "增加水处理系统，处理后的水回收利用",
       "endTime": "2027-06-30",
-      "progressDesc": "现场调研完成，方案已交总部立项",
-      "manager": "刘彬、张军委、刘传海"
+      "progressDesc": "3线安装完成，测试中",
+      "manager": "刘彬、刘传海"
     },
     {
-      "name": "高压机联动集控",
       "category": "节能降耗",
       "status": "未开始",
+      "name": "高压机联动集控",
       "currentStatus": "各机台加载率根据设定值自动加卸载、系统无法判断合理性，无法自动进行开关机",
       "improvement": "增加集控，自动控制开关机数量",
       "endTime": "2027-06-30",
@@ -1263,9 +1252,9 @@ window.dashboardData = {
       "manager": "孙士友、黄朗朗"
     },
     {
-      "name": "三车间新增热泵评估",
       "category": "节能降耗",
       "status": "立项中",
+      "name": "三车间新增热泵评估",
       "currentStatus": "热充和无菌UHT蒸汽用量较大，可以规划节能",
       "improvement": "利用高温热泵技术",
       "endTime": "2027-06-30",
@@ -1273,31 +1262,31 @@ window.dashboardData = {
       "manager": "刘传海、孙士友"
     },
     {
-      "name": "三车间8台低压机联动自控",
       "category": "节能降耗",
       "status": "备货中",
+      "name": "三车间8台低压机联动自控",
       "currentStatus": "目前单供且多为工频设备，需求端变化多",
       "improvement": "联动控制可节省11%电量",
       "cost": "23",
       "benefit": "32",
-      "endTime": "2027-06-30",
+      "endTime": "2026-12-30",
       "progressDesc": "立项已核准，招标作业已完成，备货中",
       "manager": "刘传海、孙士友"
     },
     {
-      "name": "新增变压器",
       "category": "排产优化",
       "status": "备货中",
+      "name": "新增变压器",
       "currentStatus": "新增SCC和膜包品项，高配需增加变压器",
       "cost": "276",
-      "endTime": "2027-06-30",
+      "endTime": "2026-12-30",
       "progressDesc": "立项签呈已核准，预计8月底到货",
       "manager": "陈天飞"
     },
     {
-      "name": "智慧备件库",
       "category": "数字化",
       "status": "规划中",
+      "name": "智慧备件库",
       "currentStatus": "备件库人员减少，工作量极大，账务混乱",
       "improvement": "上智慧备件库",
       "cost": "175",
@@ -1306,21 +1295,21 @@ window.dashboardData = {
       "manager": "陈天飞"
     },
     {
-      "name": "一车间自来水换热",
       "category": "节能降耗",
       "status": "规划中",
+      "name": "一车间自来水换热",
       "currentStatus": "塔水回水温度较高，热能浪费，且耗电冷却",
       "improvement": "与12水站自来水进行换热",
       "cost": "65",
       "benefit": "50",
-      "endTime": "2027-06-30",
+      "endTime": "2026-12-30",
       "progressDesc": "方案拟定中",
       "manager": "刘传海、孙士友"
     },
     {
-      "name": "二三车间高效机房",
       "category": "节能降耗",
       "status": "规划中",
+      "name": "二三车间高效机房",
       "currentStatus": "冰水机独立运行，且大部分增压泵无变频器，造成能源浪费",
       "improvement": "增加集控系统，做到自动调控",
       "cost": "480",
@@ -1330,20 +1319,20 @@ window.dashboardData = {
       "manager": "魏志忠，郑立虎、刘传海"
     },
     {
-      "name": "RGV新增小车",
       "category": "排产优化",
       "status": "未开始",
+      "name": "RGV新增小车",
       "currentStatus": "一车间3条线产品连廊移入二车间立体库，入库速度不足",
       "improvement": "新增1台小车",
       "cost": "17",
       "endTime": "2027-06-30",
-      "progressDesc": "签呈签核中",
+      "progressDesc": "方案拟定中",
       "manager": "孙士友、黄朗朗"
     },
     {
-      "name": "新增一跨5层四向车立体库",
       "category": "自动化改善",
       "status": "未开始",
+      "name": "新增一跨5层四向车立体库",
       "currentStatus": "1、客制化产品现场管理难度大，客诉多\r\r\n2、一库库容不足",
       "cost": "750",
       "endTime": "2027-06-30",
@@ -1351,9 +1340,9 @@ window.dashboardData = {
       "manager": "汤平峰"
     },
     {
-      "name": "WMS",
       "category": "自动化改善",
       "status": "规划中",
+      "name": "WMS",
       "currentStatus": "泛得立体库目前不具备上线WMS系统，需要升级改造",
       "improvement": "1约15日到厂评估方案",
       "cost": "71",
@@ -1362,9 +1351,9 @@ window.dashboardData = {
       "manager": "袁胜利"
     },
     {
-      "name": "外箱覆膜机无人化改善",
       "category": "自动化改善",
       "status": "未开始",
+      "name": "外箱覆膜机无人化改善",
       "currentStatus": "目前人工放箱及码垛，0.3元/箱",
       "improvement": "移至三库连RGV直接入库",
       "endTime": "2027-06-30",
@@ -1372,9 +1361,9 @@ window.dashboardData = {
       "manager": "黄朗朗"
     },
     {
-      "name": "增加立体库",
       "category": "自动化改善",
       "status": "规划中",
+      "name": "增加立体库",
       "currentStatus": "原料存放混乱且空间利用率底",
       "improvement": "1、二车间规划原料立体库\r\r\n2、三车间增加货架",
       "endTime": "2027-06-30",
@@ -1382,9 +1371,9 @@ window.dashboardData = {
       "manager": "段春雷、黄朗朗"
     },
     {
-      "name": "增加AGV倒库",
       "category": "自动化改善",
       "status": "规划中",
+      "name": "增加AGV倒库",
       "currentStatus": "散装车一车多库，旺季马路拥堵，出货能力不足",
       "endTime": "2027-06-30",
       "progressDesc": "方案拟定中",
