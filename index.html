@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title id="pageTitle">苏州顶津 - 资金预算与工程进度综合看板</title>
+    <title id="pageTitle"></title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js CDN -->
@@ -17,24 +17,21 @@
     <style>
         body { background-color: #090d16; color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         
-        /* 多彩独立图框背景样式 */
-        .panel-emerald { background: linear-gradient(135deg, rgba(6, 95, 70, 0.4) 0%, rgba(15, 23, 42, 0.8) 100%); backdrop-filter: blur(12px); border: 1px solid rgba(52, 211, 153, 0.4); box-shadow: 0 8px 32px 0 rgba(4, 120, 87, 0.15); transition: all 0.3s ease; }
-        .panel-emerald:hover { border-color: rgba(52, 211, 153, 0.8); box-shadow: 0 0 25px rgba(52, 211, 153, 0.3); }
+        /* 多彩独立图框背景样式与发光动画 */
+        .panel-emerald { background: linear-gradient(135deg, rgba(6, 95, 70, 0.4) 0%, rgba(15, 23, 42, 0.8) 100%); backdrop-filter: blur(12px); border: 1px solid rgba(52, 211, 153, 0.4); box-shadow: 0 8px 32px 0 rgba(4, 120, 87, 0.15); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .panel-emerald:hover { border-color: rgba(52, 211, 153, 0.9); box-shadow: 0 0 30px rgba(52, 211, 153, 0.45); }
 
-        .panel-cyan { background: linear-gradient(135deg, rgba(14, 116, 144, 0.4) 0%, rgba(15, 23, 42, 0.8) 100%); backdrop-filter: blur(12px); border: 1px solid rgba(34, 211, 238, 0.4); box-shadow: 0 8px 32px 0 rgba(8, 145, 178, 0.15); transition: all 0.3s ease; }
-        .panel-cyan:hover { border-color: rgba(34, 211, 238, 0.8); box-shadow: 0 0 25px rgba(34, 211, 238, 0.3); }
+        .panel-cyan { background: linear-gradient(135deg, rgba(14, 116, 144, 0.4) 0%, rgba(15, 23, 42, 0.8) 100%); backdrop-filter: blur(12px); border: 1px solid rgba(34, 211, 238, 0.4); box-shadow: 0 8px 32px 0 rgba(8, 145, 178, 0.15); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .panel-cyan:hover { border-color: rgba(34, 211, 238, 0.9); box-shadow: 0 0 30px rgba(34, 211, 238, 0.45); }
 
-        .panel-indigo { background: linear-gradient(135deg, rgba(67, 56, 202, 0.35) 0%, rgba(15, 23, 42, 0.8) 100%); backdrop-filter: blur(12px); border: 1px solid rgba(129, 140, 248, 0.4); box-shadow: 0 8px 32px 0 rgba(79, 70, 229, 0.15); transition: all 0.3s ease; }
-        .panel-indigo:hover { border-color: rgba(129, 140, 248, 0.8); box-shadow: 0 0 25px rgba(129, 140, 248, 0.3); }
+        .panel-indigo { background: linear-gradient(135deg, rgba(67, 56, 202, 0.35) 0%, rgba(15, 23, 42, 0.8) 100%); backdrop-filter: blur(12px); border: 1px solid rgba(129, 140, 248, 0.4); box-shadow: 0 8px 32px 0 rgba(79, 70, 229, 0.15); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .panel-indigo:hover { border-color: rgba(129, 140, 248, 0.9); box-shadow: 0 0 30px rgba(129, 140, 248, 0.45); }
 
-        .panel-amber { background: linear-gradient(135deg, rgba(180, 83, 9, 0.35) 0%, rgba(15, 23, 42, 0.8) 100%); backdrop-filter: blur(12px); border: 1px solid rgba(251, 191, 36, 0.4); box-shadow: 0 8px 32px 0 rgba(217, 119, 6, 0.15); transition: all 0.3s ease; }
-        .panel-amber:hover { border-color: rgba(251, 191, 36, 0.8); box-shadow: 0 0 25px rgba(251, 191, 36, 0.3); }
+        .panel-amber { background: linear-gradient(135deg, rgba(180, 83, 9, 0.35) 0%, rgba(15, 23, 42, 0.8) 100%); backdrop-filter: blur(12px); border: 1px solid rgba(251, 191, 36, 0.4); box-shadow: 0 8px 32px 0 rgba(217, 119, 6, 0.15); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .panel-amber:hover { border-color: rgba(251, 191, 36, 0.9); box-shadow: 0 0 30px rgba(251, 191, 36, 0.45); }
 
-        .panel-slate { background: linear-gradient(135deg, rgba(30, 41, 59, 0.75) 0%, rgba(15, 23, 42, 0.9) 100%); backdrop-filter: blur(12px); border: 1px solid rgba(148, 163, 184, 0.25); box-shadow: 0 8px 32px 0 rgba(15, 23, 42, 0.3); transition: all 0.3s ease; }
-        .panel-slate:hover { border-color: rgba(56, 189, 248, 0.6); box-shadow: 0 0 20px rgba(56, 189, 248, 0.2); }
-
-        /* 通用玻璃面板备用 */
-        .glass-panel { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(51, 65, 85, 0.6); }
+        .panel-slate { background: linear-gradient(135deg, rgba(30, 41, 59, 0.75) 0%, rgba(15, 23, 42, 0.9) 100%); backdrop-filter: blur(12px); border: 1px solid rgba(148, 163, 184, 0.25); box-shadow: 0 8px 32px 0 rgba(15, 23, 42, 0.3); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .panel-slate:hover { border-color: rgba(56, 189, 248, 0.8); box-shadow: 0 0 25px rgba(56, 189, 248, 0.35); }
 
         .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
@@ -54,19 +51,14 @@
 
         .custom-tooltip { pointer-events: none !important; transition: opacity 0.2s ease-out, top 0.05s ease-out, left 0.05s ease-out; will-change: top, left, opacity; z-index: 9999; }
 
-        /* ==================== 优化：霓虹光标跟随特效容器与光晕样式 ==================== */
-        .neon-wrapper {
-            position: relative;
-            overflow-x: hidden;
-        }
+        /* 霓虹光标跟随特效容器与光晕样式 */
+        .neon-wrapper { position: relative; overflow-x: hidden; }
         .neon-glow {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 350px; /* 调整光晕的尺寸至更精致的大小 */
-            height: 350px;
+            top: 0; left: 0;
+            width: 350px; height: 350px;
             background: radial-gradient(circle, rgba(56, 189, 248, 0.15) 0%, rgba(59, 130, 246, 0.05) 40%, transparent 70%);
-            transform: translate3d(0, 0, 0) translate(-50%, -50%); /* 使用 translate3d 开启 GPU 硬件加速 */
+            transform: translate3d(0, 0, 0) translate(-50%, -50%);
             pointer-events: none;
             z-index: 0;
             transition: opacity 0.3s;
@@ -75,85 +67,84 @@
         }
         .neon-wrapper:hover .neon-glow { opacity: 1; }
 
-        /* ==================== 悬浮模块高亮、立体浮动及模糊效果 ==================== */
+        /* 悬浮模块高亮发光与立体浮动效果 */
         body:has(.interactive-module:hover) .interactive-module:not(:hover) {
-            filter: blur(6px);
-            opacity: 0.35;
+            filter: blur(4px);
+            opacity: 0.45;
             transform: scale(0.99);
         }
         .interactive-module {
             position: relative;
             z-index: 1;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.3s ease, opacity 0.3s ease;
+            transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.3s ease, opacity 0.3s ease;
         }
         .interactive-module:hover {
             transform: translateY(-6px) scale(1.01);
-            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.6), 0 0 25px rgba(56, 189, 248, 0.4);
-            border-color: rgba(56, 189, 248, 0.8);
             z-index: 10;
         }
     </style>
 </head>
 <body class="min-h-screen p-4 md:p-6 custom-scrollbar relative neon-wrapper">
 
-    <!-- 新增：独立光晕跟随元素 -->
+    <!-- 光晕跟随元素 -->
     <div class="neon-glow" id="neonGlow"></div>
+
     <!-- Tooltips -->
     <div id="projectTooltip" class="custom-tooltip fixed hidden opacity-0 panel-cyan rounded-xl p-4 w-72 shadow-2xl bg-slate-900/95 backdrop-blur-md">
         <div class="flex justify-between items-start mb-2.5 pb-2 border-b border-slate-700/80">
-            <h4 id="ttName" class="font-bold text-sm text-cyan-300">项目名称</h4>
-            <span id="ttStatus" class="text-[11px] px-2 py-0.5 rounded font-mono font-medium">状态</span>
+            <h4 id="ttName" class="font-bold text-sm text-cyan-300"></h4>
+            <span id="ttStatus" class="text-[11px] px-2 py-0.5 rounded font-mono font-medium"></span>
         </div>
         <div class="space-y-2 text-xs">
-            <div class="flex items-center justify-between"><span class="text-slate-400 flex items-center gap-1.5"><i data-lucide="building" class="w-3.5 h-3.5 text-blue-400"></i> 所属部门</span><span id="ttDept" class="text-slate-200 font-medium">--</span></div>
-            <div class="flex items-center justify-between"><span class="text-slate-400 flex items-center gap-1.5"><i data-lucide="coins" class="w-3.5 h-3.5 text-amber-400"></i> 项目总价（万元）</span><span id="ttCost" class="text-amber-300 font-mono font-semibold">--</span></div>
-            <div class="flex items-center justify-between"><span class="text-slate-400 flex items-center gap-1.5"><i data-lucide="truck" class="w-3.5 h-3.5 text-emerald-400"></i> 合作供应商</span><span id="ttSupplier" class="text-slate-200 font-medium truncate max-w-[140px]">--</span></div>
-            <div class="flex items-center justify-between"><span class="text-slate-400 flex items-center gap-1.5"><i data-lucide="user" class="w-3.5 h-3.5 text-purple-400"></i> 项目负责人</span><span id="ttManager" class="text-slate-200 font-medium">--</span></div>
-            <div class="flex items-center justify-between"><span class="text-slate-400 flex items-center gap-1.5"><i data-lucide="tag" class="w-3.5 h-3.5 text-cyan-400"></i> 维修费/固定资产</span><span id="ttCategories" class="text-slate-200 font-medium">--</span></div>
-            <div class="flex items-center justify-between"><span class="text-slate-400 flex items-center gap-1.5"><i data-lucide="tag" class="w-3.5 h-3.5 text-cyan-400"></i> 备注</span><span id="ttNotes" class="text-slate-200 font-medium">--</span></div>
+            <div class="flex items-center justify-between"><span class="text-slate-400 flex items-center gap-1.5"><i data-lucide="building" class="w-3.5 h-3.5 text-blue-400"></i> 所属部门</span><span id="ttDept" class="text-slate-200 font-medium"></span></div>
+            <div class="flex items-center justify-between"><span class="text-slate-400 flex items-center gap-1.5"><i data-lucide="coins" class="w-3.5 h-3.5 text-amber-400"></i> 项目总价（万元）</span><span id="ttCost" class="text-amber-300 font-mono font-semibold"></span></div>
+            <div class="flex items-center justify-between"><span class="text-slate-400 flex items-center gap-1.5"><i data-lucide="truck" class="w-3.5 h-3.5 text-emerald-400"></i> 合作供应商</span><span id="ttSupplier" class="text-slate-200 font-medium truncate max-w-[140px]"></span></div>
+            <div class="flex items-center justify-between"><span class="text-slate-400 flex items-center gap-1.5"><i data-lucide="user" class="w-3.5 h-3.5 text-purple-400"></i> 项目负责人</span><span id="ttManager" class="text-slate-200 font-medium"></span></div>
+            <div class="flex items-center justify-between"><span class="text-slate-400 flex items-center gap-1.5"><i data-lucide="tag" class="w-3.5 h-3.5 text-cyan-400"></i> 维修费/固定资产</span><span id="ttCategories" class="text-slate-200 font-medium"></span></div>
+            <div class="flex items-center justify-between"><span class="text-slate-400 flex items-center gap-1.5"><i data-lucide="tag" class="w-3.5 h-3.5 text-cyan-400"></i> 备注</span><span id="ttNotes" class="text-slate-200 font-medium"></span></div>
          </div>
     </div>
 
     <div id="planTooltip" class="custom-tooltip fixed hidden opacity-0 panel-indigo rounded-xl p-4 w-80 shadow-2xl bg-slate-900/95 backdrop-blur-md">
         <div class="flex justify-between items-start mb-2.5 pb-2 border-b border-slate-700/80">
             <div>
-                <h4 id="planTtName" class="font-bold text-sm text-indigo-300">技改项目名称</h4>
-                <span id="planTtCategory" class="text-[10px] text-slate-400 bg-slate-800 px-1.5 py-0.5 rounded border border-slate-700 mt-1 inline-block">分类</span>
+                <h4 id="planTtName" class="font-bold text-sm text-indigo-300"></h4>
+                <span id="planTtCategory" class="text-[10px] text-slate-400 bg-slate-800 px-1.5 py-0.5 rounded border border-slate-700 mt-1 inline-block"></span>
             </div>
-            <span id="planTtStatus" class="text-[11px] px-2 py-0.5 rounded font-mono font-medium">状态</span>
+            <span id="planTtStatus" class="text-[11px] px-2 py-0.5 rounded font-mono font-medium"></span>
         </div>
         <div class="space-y-2 text-xs">
-            <div><span class="text-slate-400 block mb-0.5 flex items-center gap-1"><i data-lucide="alert-circle" class="w-3 h-3 text-amber-400"></i> 现状说明：</span><p id="planTtCurrent" class="text-slate-300 leading-snug pl-4">--</p></div>
-            <div><span class="text-slate-400 block mb-0.5 flex items-center gap-1"><i data-lucide="wrench" class="w-3 h-3 text-cyan-400"></i> 改善方案：</span><p id="planTtImprovement" class="text-slate-300 leading-snug pl-4">--</p></div>
+            <div><span class="text-slate-400 block mb-0.5 flex items-center gap-1"><i data-lucide="alert-circle" class="w-3 h-3 text-amber-400"></i> 现状说明：</span><p id="planTtCurrent" class="text-slate-300 leading-snug pl-4"></p></div>
+            <div><span class="text-slate-400 block mb-0.5 flex items-center gap-1"><i data-lucide="wrench" class="w-3 h-3 text-cyan-400"></i> 改善方案：</span><p id="planTtImprovement" class="text-slate-300 leading-snug pl-4"></p></div>
             <div class="grid grid-cols-2 gap-2 pt-1 border-t border-slate-800">
-                <div><span class="text-slate-400">预估费用:</span><span id="planTtCost" class="text-amber-300 font-mono font-semibold block">--</span></div>
-                <div><span class="text-slate-400">预估年效益:</span><span id="planTtBenefit" class="text-emerald-400 font-mono font-semibold block">--</span></div>
+                <div><span class="text-slate-400">预估费用:</span><span id="planTtCost" class="text-amber-300 font-mono font-semibold block"></span></div>
+                <div><span class="text-slate-400">预估年效益:</span><span id="planTtBenefit" class="text-emerald-400 font-mono font-semibold block"></span></div>
             </div>
             <div class="grid grid-cols-2 gap-2 pt-1 border-t border-slate-800">
-                <div><span class="text-slate-400">预计完成:</span><span id="planTtEndTime" class="text-slate-200 font-mono block">--</span></div>
-                <div><span class="text-slate-400">责任人:</span><span id="planTtManager" class="text-indigo-300 font-medium block">--</span></div>
+                <div><span class="text-slate-400">预计完成:</span><span id="planTtEndTime" class="text-slate-200 font-mono block"></span></div>
+                <div><span class="text-slate-400">责任人:</span><span id="planTtManager" class="text-indigo-300 font-medium block"></span></div>
             </div>
-            <div class="pt-1 border-t border-slate-800"><span class="text-slate-400">进度说明:</span><span id="planTtProgressDesc" class="text-slate-300 block">--</span></div>
+            <div class="pt-1 border-t border-slate-800"><span class="text-slate-400">进度说明:</span><span id="planTtProgressDesc" class="text-slate-300 block"></span></div>
         </div>
     </div>
 
     <div id="assetTooltip" class="custom-tooltip fixed hidden opacity-0 panel-emerald rounded-xl p-4 w-80 shadow-2xl bg-slate-900/95 backdrop-blur-md">
         <div class="flex justify-between items-start mb-2.5 pb-2 border-b border-slate-700/80">
             <div>
-                <h4 id="assetTtName" class="font-bold text-sm text-emerald-300">资产名称</h4>
-                <span id="assetTtCategory" class="text-[10px] text-slate-400 bg-slate-800 px-1.5 py-0.5 rounded border border-slate-700 mt-1 inline-block">分类</span>
+                <h4 id="assetTtName" class="font-bold text-sm text-emerald-300"></h4>
+                <span id="assetTtCategory" class="text-[10px] text-slate-400 bg-slate-800 px-1.5 py-0.5 rounded border border-slate-700 mt-1 inline-block"></span>
             </div>
-            <span id="assetTtStatus" class="text-[11px] px-2 py-0.5 rounded font-mono font-medium">对应预算项目</span>
+            <span id="assetTtStatus" class="text-[11px] px-2 py-0.5 rounded font-mono font-medium"></span>
         </div>
         <div class="space-y-2 text-xs">
-            <div class="flex items-center justify-between"><span class="text-slate-400 flex items-center gap-1.5"><i data-lucide="building" class="w-3.5 h-3.5 text-blue-400"></i> 所属部门</span><span id="assetTtDept" class="text-slate-200 font-medium">--</span></div>
-            <div class="flex items-center justify-between"><span class="text-slate-400 flex items-center gap-1.5"><i data-lucide="calendar-check-2" class="w-3.5 h-3.5 text-purple-400"></i> 入账月份</span><span id="assetTtMonth" class="text-slate-200 font-mono font-semibold">--</span></div>
+            <div class="flex items-center justify-between"><span class="text-slate-400 flex items-center gap-1.5"><i data-lucide="building" class="w-3.5 h-3.5 text-blue-400"></i> 所属部门</span><span id="assetTtDept" class="text-slate-200 font-medium"></span></div>
+            <div class="flex items-center justify-between"><span class="text-slate-400 flex items-center gap-1.5"><i data-lucide="calendar-check-2" class="w-3.5 h-3.5 text-purple-400"></i> 入账月份</span><span id="assetTtMonth" class="text-slate-200 font-mono font-semibold"></span></div>
             <div class="grid grid-cols-2 gap-2 pt-1 border-t border-slate-800">
-                <div><span class="text-slate-400 block">计划预算:</span><span id="assetTtBudget" class="text-blue-300 font-mono font-semibold">--</span></div>
-                <div class="text-right"><span class="text-slate-400 block">实际支出:</span><span id="assetTtActual" class="text-amber-300 font-mono font-semibold">--</span></div>
+                <div><span class="text-slate-400 block">计划预算:</span><span id="assetTtBudget" class="text-blue-300 font-mono font-semibold"></span></div>
+                <div class="text-right"><span class="text-slate-400 block">实际支出:</span><span id="assetTtActual" class="text-amber-300 font-mono font-semibold"></span></div>
             </div>
             <div class="flex items-center justify-between pt-1 border-t border-slate-800">
-                <span class="text-slate-400 flex items-center gap-1.5"><i data-lucide="trending-down" class="w-3.5 h-3.5 text-emerald-400"></i> 偏差 / 执行率</span><span id="assetTtDiff" class="font-mono font-bold">--</span>
+                <span class="text-slate-400 flex items-center gap-1.5"><i data-lucide="trending-down" class="w-3.5 h-3.5 text-emerald-400"></i> 偏差 / 执行率</span><span id="assetTtDiff" class="font-mono font-bold"></span>
             </div>
         </div>
     </div>
@@ -163,45 +154,45 @@
         <div class="flex items-center gap-3.5 z-10">
             <div class="p-2.5 bg-slate-800/90 rounded-xl border border-indigo-500/40 text-indigo-400"><i data-lucide="building-2" class="w-6 h-6"></i></div>
             <div>
-                <h1 id="headerTitle" class="text-xl md:text-2xl font-bold tracking-wide text-white flex items-center gap-2">--</h1>
-                <p id="headerSubtitle" class="text-xs text-slate-300 mt-0.5">--</p>
+                <h1 id="headerTitle" class="text-xl md:text-2xl font-bold tracking-wide text-white flex items-center gap-2"></h1>
+                <p id="headerSubtitle" class="text-xs text-slate-300 mt-0.5"></p>
             </div>
         </div>
 
         <div class="flex items-center gap-4 text-sm text-slate-300 z-10">
-            <div class="flex items-center gap-2 bg-slate-900/80 px-3 py-1.5 rounded-lg border border-indigo-500/30"><i data-lucide="calendar" class="w-4 h-4 text-indigo-400"></i><span id="headerDate" class="font-mono">--</span></div>
-            <div class="flex items-center gap-2 bg-slate-900/80 px-3 py-1.5 rounded-lg border border-indigo-500/30"><i data-lucide="user-check" class="w-4 h-4 text-emerald-400"></i><span id="headerUser">--</span></div>
+            <div class="flex items-center gap-2 bg-slate-900/80 px-3 py-1.5 rounded-lg border border-indigo-500/30"><i data-lucide="calendar" class="w-4 h-4 text-indigo-400"></i><span id="headerDate" class="font-mono"></span></div>
+            <div class="flex items-center gap-2 bg-slate-900/80 px-3 py-1.5 rounded-lg border border-indigo-500/30"><i data-lucide="user-check" class="w-4 h-4 text-emerald-400"></i><span id="headerUser"></span></div>
         </div>
         <div class="aurora-bottom-bar"></div>
     </header>
 
     <!-- KPI 区域 -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <div class="panel-cyan interactive-module p-5 rounded-xl flex items-center justify-between relative overflow-hidden group">
+        <div class="panel-cyan interactive-module p-5 rounded-xl flex items-center justify-between relative overflow-hidden group cursor-pointer">
             <div>
                 <p class="text-sm font-medium text-cyan-200 flex items-center gap-1.5"><i data-lucide="wallet" class="w-4 h-4 text-cyan-300"></i> 年度项目总预算</p>
-                <h2 class="text-2xl font-bold text-white mt-2 font-mono">¥ <span id="kpiTotalBudget">--</span> <span id="kpiTotalBudgetUnit" class="text-base font-normal text-slate-300">亿元</span></h2>
+                <h2 class="text-2xl font-bold text-white mt-2 font-mono">¥ <span id="kpiTotalBudget"></span> <span id="kpiTotalBudgetUnit" class="text-base font-normal text-slate-300"></span></h2>
             </div>
         </div>
-        <div class="panel-amber interactive-module p-5 rounded-xl flex items-center justify-between relative overflow-hidden group">
+        <div class="panel-amber interactive-module p-5 rounded-xl flex items-center justify-between relative overflow-hidden group cursor-pointer">
             <div>
                 <p class="text-sm font-medium text-amber-200 flex items-center gap-1.5"><i data-lucide="credit-card" class="w-4 h-4 text-amber-300"></i> 实际已支出</p>
-                <h2 class="text-2xl font-bold text-white mt-2 font-mono">¥ <span id="kpiActualSpend">--</span> <span id="kpiActualSpendUnit" class="text-base font-normal text-slate-300">亿元</span></h2>
-                <span id="kpiExecutionRate" class="inline-block mt-1 text-xs px-2 py-0.5 bg-amber-500/30 text-amber-200 border border-amber-500/40 rounded font-mono">执行率 --%</span>
+                <h2 class="text-2xl font-bold text-white mt-2 font-mono">¥ <span id="kpiActualSpend"></span> <span id="kpiActualSpendUnit" class="text-base font-normal text-slate-300"></span></h2>
+                <span id="kpiExecutionRate" class="inline-block mt-1 text-xs px-2 py-0.5 bg-amber-500/30 text-amber-200 border border-amber-500/40 rounded font-mono"></span>
             </div>
         </div>
-        <div class="panel-emerald interactive-module p-5 rounded-xl flex items-center justify-between relative overflow-hidden group">
+        <div class="panel-emerald interactive-module p-5 rounded-xl flex items-center justify-between relative overflow-hidden group cursor-pointer">
             <div>
                 <p class="text-sm font-medium text-emerald-200 flex items-center gap-1.5"><i data-lucide="activity" class="w-4 h-4 text-emerald-300"></i> 年度工程总体进度</p>
-                <h2 class="text-2xl font-bold text-white mt-2 font-mono" id="overallProgressText">--%</h2>
+                <h2 class="text-2xl font-bold text-white mt-2 font-mono" id="overallProgressText"></h2>
                 <div class="w-32 bg-slate-800/80 h-2 rounded-full mt-2 overflow-hidden border border-emerald-500/30"><div id="overallProgressBar" class="bg-emerald-400 h-full rounded-full" style="width: 0%;"></div></div>
             </div>
         </div>
-        <div class="panel-indigo interactive-module p-5 rounded-xl flex items-center justify-between relative overflow-hidden group">
+        <div class="panel-indigo interactive-module p-5 rounded-xl flex items-center justify-between relative overflow-hidden group cursor-pointer">
             <div>
                 <p class="text-sm font-medium text-indigo-200 flex items-center gap-1.5"><i data-lucide="shield-check" class="w-4 h-4 text-indigo-300"></i> 预警状态</p>
-                <h2 id="kpiWarningStatus" class="text-xl font-bold text-emerald-400 mt-2 flex items-center gap-2">--</h2>
-                <p id="kpiWarningSubtext" class="text-xs text-slate-300 mt-1">--</p>
+                <h2 id="kpiWarningStatus" class="text-xl font-bold text-emerald-400 mt-2 flex items-center gap-2"></h2>
+                <p id="kpiWarningSubtext" class="text-xs text-slate-300 mt-1"></p>
             </div>
         </div>
     </div>
@@ -423,26 +414,6 @@
     <script>
         let projectsData = [], planProjectsData = [], assetData = [];
 
-        // 密码验证逻辑（默认密码：8888，可在此处修改）
-        function checkPassword(e) {
-            e.preventDefault();
-            const pwdInput = document.getElementById('accessPassword').value;
-            const correctPassword = "8888"; // <-- 在此可更改您的访问密码
-            
-            if (pwdInput === correctPassword) {
-                const modal = document.getElementById('passwordModal');
-                modal.classList.add('opacity-0', 'transition-opacity', 'duration-300');
-                setTimeout(() => {
-                    modal.remove();
-                }, 300);
-            } else {
-                const errorTip = document.getElementById('passwordError');
-                errorTip.classList.remove('hidden');
-                document.getElementById('accessPassword').value = '';
-                document.getElementById('accessPassword').focus();
-            }
-        }
-
         function getFormattedDiff(item) {
             if (item.budget && item.actual) {
                 const b = parseFloat(String(item.budget).replace(/,/g, ''));
@@ -461,7 +432,7 @@
                 }
                 return item.diff;
             }
-            return '--';
+            return '';
         }
 
         function getStatusBadge(progress, status) {
@@ -492,13 +463,13 @@
             const buildHtmlGroup = (list) => list.map((item, index) => {
                 const badge = getStatusBadge(item.progress, item.status);
                 return `
-                    <div class="project-item p-2 rounded-lg hover:bg-slate-800/80 transition-colors duration-200 cursor-pointer" data-index="${index}">
+                    <div class="project-item p-2 rounded-lg hover:bg-slate-800/80 hover:shadow-[0_0_15px_rgba(52,211,153,0.3)] border border-transparent hover:border-emerald-500/40 transition-all duration-200 cursor-pointer" data-index="${index}">
                         <div class="grid grid-cols-12 gap-1.5 text-xs mb-1.5 items-start pointer-events-none">
                             <div class="col-span-6 text-slate-100 font-medium line-clamp-2 break-all leading-relaxed" title="${index + 1}. ${item.name}">
                                 ${index + 1}. ${item.name}
                             </div>
                             <div class="col-span-3 text-slate-300 font-mono text-center pt-0.5 truncate">
-                                ${item.cost || '--'}
+                                ${item.cost || ''}
                             </div>
                             <div class="col-span-3 text-right pt-0.5 truncate">
                                 <span class="${badge.class} px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold inline-block">${badge.text}</span>
@@ -517,7 +488,7 @@
             const buildHtmlGroup = (list) => list.map((item, index) => {
                 const badgeClass = getPlanStatusBadge(item.status);
                 return `
-                    <div class="plan-item p-2.5 rounded-lg bg-slate-900/60 hover:bg-slate-800/80 border border-indigo-500/20 flex justify-between items-center cursor-pointer transition-colors" data-index="${index}">
+                    <div class="plan-item p-2.5 rounded-lg bg-slate-900/60 hover:bg-slate-800/80 hover:shadow-[0_0_15px_rgba(129,140,248,0.3)] border border-indigo-500/20 hover:border-indigo-400/60 flex justify-between items-center cursor-pointer transition-all" data-index="${index}">
                         <span class="text-xs text-slate-200 font-medium pointer-events-none">${index + 1}. ${item.name}</span>
                         <span class="px-2 py-0.5 rounded border text-[10px] ${badgeClass} pointer-events-none">${item.status}</span>
                     </div>`;
@@ -533,7 +504,7 @@
                 const diffClass = isOver ? 'text-amber-400' : 'text-emerald-400';
                 const statusBadge = item.status === '正常' ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' : 'bg-amber-500/20 text-amber-300 border-amber-500/30';
                 return `
-                    <tr class="asset-row hover:bg-slate-800/60 transition-colors cursor-pointer flex items-center h-[48px] box-border" data-index="${index}">
+                    <tr class="asset-row hover:bg-slate-800/80 hover:shadow-[0_0_15px_rgba(56,189,248,0.25)] transition-all cursor-pointer flex items-center h-[48px] box-border" data-index="${index}">
                         <td class="w-[22%] px-3 font-medium text-white flex items-center gap-2 truncate">
                             <span class="w-2 h-2 rounded-full shrink-0 ${item.status === '正常' ? 'bg-cyan-400' : 'bg-amber-400'}"></span>
                             <span class="truncate">${item.name}</span>
@@ -639,18 +610,18 @@
 
             tbody.innerHTML = dataList.map((item, idx) => {
                 const badge = getStatusBadge(item.progress, item.status);
-                const startTimeVal = item.progress || item.startTime || item.startDate || '--';
+                const startTimeVal = item.progress || item.startTime || item.startDate || '';
                 return `
                     <tr class="hover:bg-slate-800/60 transition-colors border-b border-slate-800/50">
                         <td class="p-3 text-center text-slate-400 font-mono text-xs">${idx + 1}</td>
-                        <td class="p-3 font-medium text-slate-100">${item.name || '--'}</td>
-                        <td class="p-3 text-slate-300">${item.dept || '--'}</td>
-                        <td class="p-3 text-right font-mono text-amber-300 font-medium">${item.cost || '--'}</td>
-                        <td class="p-3 text-slate-200">${item.supplier || '--'}</td>
-                        <td class="p-3 text-slate-200">${item.manager || '--'}</td>
+                        <td class="p-3 font-medium text-slate-100">${item.name || ''}</td>
+                        <td class="p-3 text-slate-300">${item.dept || ''}</td>
+                        <td class="p-3 text-right font-mono text-amber-300 font-medium">${item.cost || ''}</td>
+                        <td class="p-3 text-slate-200">${item.supplier || ''}</td>
+                        <td class="p-3 text-slate-200">${item.manager || ''}</td>
                         <td class="p-3 text-center font-mono text-xs text-slate-200">${startTimeVal}</td>
-                        <td class="p-3 text-slate-200 font-medium">${item.Categories || item.category || '--'}</td>
-                        <td class="p-3 text-slate-300 italic">${item.Notes || item.remark || item.note || '--'}</td>
+                        <td class="p-3 text-slate-200 font-medium">${item.Categories || item.category || ''}</td>
+                        <td class="p-3 text-slate-300 italic">${item.Notes || item.remark || item.note || ''}</td>
                         <td class="p-3 text-center">
                             <span class="text-[11px] px-2 py-0.5 rounded font-mono font-medium ${badge.class}">${badge.text}</span>
                         </td>
@@ -728,17 +699,17 @@
                 return `
                     <tr class="hover:bg-slate-800/60 transition-colors border-b border-slate-800/50">
                         <td class="p-2.5 text-center text-slate-400 font-mono text-xs">${idx + 1}</td>
-                        <td class="p-2.5 font-medium text-slate-100" title="${item.name || ''}">${item.name || '--'}</td>
-                        <td class="p-2.5 text-slate-300"><span class="bg-slate-900 px-1 py-0.5 rounded border border-slate-700 text-[11px]">${item.category || '--'}</span></td>
-                        <td class="p-2.5 text-slate-200 text-[11px] leading-relaxed" title="${item.currentStatus || ''}">${item.currentStatus || '--'}</td>
-                        <td class="p-2.5 text-slate-200 text-[11px] leading-relaxed" title="${item.improvement || ''}">${item.improvement || '--'}</td>
-                        <td class="p-2.5 text-slate-300 text-[11px] leading-relaxed" title="${item.progressDesc || ''}">${item.progressDesc || '--'}</td>
-                        <td class="p-2.5 text-right font-mono text-amber-300 text-xs">${item.cost || '--'}</td>
-                        <td class="p-2.5 text-right font-mono text-emerald-400 text-xs">${item.benefit || '--'}</td>
-                        <td class="p-2.5 text-center font-mono text-[11px] text-slate-200">${item.endTime || '--'}</td>
-                        <td class="p-2.5 text-indigo-300 font-medium text-xs" title="${item.manager || ''}">${item.manager || '--'}</td>
+                        <td class="p-2.5 font-medium text-slate-100" title="${item.name || ''}">${item.name || ''}</td>
+                        <td class="p-2.5 text-slate-300"><span class="bg-slate-900 px-1 py-0.5 rounded border border-slate-700 text-[11px]">${item.category || ''}</span></td>
+                        <td class="p-2.5 text-slate-200 text-[11px] leading-relaxed" title="${item.currentStatus || ''}">${item.currentStatus || ''}</td>
+                        <td class="p-2.5 text-slate-200 text-[11px] leading-relaxed" title="${item.improvement || ''}">${item.improvement || ''}</td>
+                        <td class="p-2.5 text-slate-300 text-[11px] leading-relaxed" title="${item.progressDesc || ''}">${item.progressDesc || ''}</td>
+                        <td class="p-2.5 text-right font-mono text-amber-300 text-xs">${item.cost || ''}</td>
+                        <td class="p-2.5 text-right font-mono text-emerald-400 text-xs">${item.benefit || ''}</td>
+                        <td class="p-2.5 text-center font-mono text-[11px] text-slate-200">${item.endTime || ''}</td>
+                        <td class="p-2.5 text-indigo-300 font-medium text-xs" title="${item.manager || ''}">${item.manager || ''}</td>
                         <td class="p-2.5 text-center">
-                            <span class="text-[10px] px-1.5 py-0.5 rounded border font-mono font-medium ${badgeClass}">${item.status || '--'}</span>
+                            <span class="text-[10px] px-1.5 py-0.5 rounded border font-mono font-medium ${badgeClass}">${item.status || ''}</span>
                         </td>
                     </tr>`;
             }).join('');
@@ -822,16 +793,16 @@
                         <td class="p-3 text-center text-slate-400 font-mono text-xs">${idx + 1}</td>
                         <td class="p-3 font-medium text-slate-100 flex items-center gap-2">
                             <span class="w-2 h-2 rounded-full shrink-0 ${item.status === '正常' ? 'bg-cyan-400' : 'bg-amber-400'}"></span>
-                            <span>${item.name || '--'}</span>
+                            <span>${item.name || ''}</span>
                         </td>
-                        <td class="p-3 text-slate-300"><span class="bg-slate-900 px-1.5 py-0.5 rounded border border-slate-700 text-xs">${item.category || '--'}</span></td>
-                        <td class="p-3 text-slate-200">${item.dept || '--'}</td>
-                        <td class="p-3 text-right font-mono text-blue-300 font-medium">${item.budget || '--'}</td>
-                        <td class="p-3 text-right font-mono text-amber-300 font-medium">${item.actual || '--'}</td>
+                        <td class="p-3 text-slate-300"><span class="bg-slate-900 px-1.5 py-0.5 rounded border border-slate-700 text-xs">${item.category || ''}</span></td>
+                        <td class="p-3 text-slate-200">${item.dept || ''}</td>
+                        <td class="p-3 text-right font-mono text-blue-300 font-medium">${item.budget || ''}</td>
+                        <td class="p-3 text-right font-mono text-amber-300 font-medium">${item.actual || ''}</td>
                         <td class="p-3 text-right font-mono font-bold ${diffClass}">${formattedDiff}</td>
-                        <td class="p-3 text-center font-mono text-slate-200">${item.month || '--'}</td>
+                        <td class="p-3 text-center font-mono text-slate-200">${item.month || ''}</td>
                         <td class="p-3 text-center">
-                            <span class="text-[11px] px-2 py-0.5 rounded border font-mono font-medium ${statusBadge}">${item.status || '--'}</span>
+                            <span class="text-[11px] px-2 py-0.5 rounded border font-mono font-medium ${statusBadge}">${item.status || ''}</span>
                         </td>
                     </tr>`;
             }).join('');
@@ -897,7 +868,7 @@
             document.getElementById('overallProgressText').innerText = `${overallProg.toFixed(1)}%`;
             document.getElementById('overallProgressBar').style.width = `${overallProg}%`;
 
-            document.getElementById('kpiWarningStatus').innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span> ${data.kpi?.warningStatus || '暂无状态'}`;
+            document.getElementById('kpiWarningStatus').innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span> ${data.kpi?.warningStatus || ''}`;
             document.getElementById('kpiWarningSubtext').innerText = data.kpi?.warningSubtext || '';
         }
 
@@ -947,7 +918,7 @@
 
             if (window.lucide) lucide.createIcons();
 
-            // ==================== 优化后的光标跟随逻辑 (requestAnimationFrame + translate3d) ====================
+            // 光标跟随特效逻辑
             const neonGlow = document.getElementById('neonGlow');
             let mouseX = -500, mouseY = -500;
             let currentX = -500, currentY = -500;
@@ -976,42 +947,42 @@
                 document.getElementById('ttName').innerText = `${Number(index) + 1}. ${item.name}`;
                 document.getElementById('ttStatus').innerText = badge.text;
                 document.getElementById('ttStatus').className = `text-[11px] px-2 py-0.5 rounded font-mono font-medium ${badge.class}`;
-                document.getElementById('ttDept').innerText = item.dept;
-                document.getElementById('ttCost').innerText = item.cost;
-                document.getElementById('ttSupplier').innerText = item.supplier;
-                document.getElementById('ttManager').innerText = item.manager;
-                document.getElementById('ttCategories').innerText = item.Categories || item.category || '--';
-                document.getElementById('ttNotes').innerText = item.Notes || item.remark || item.note || '--';
+                document.getElementById('ttDept').innerText = item.dept || '';
+                document.getElementById('ttCost').innerText = item.cost || '';
+                document.getElementById('ttSupplier').innerText = item.supplier || '';
+                document.getElementById('ttManager').innerText = item.manager || '';
+                document.getElementById('ttCategories').innerText = item.Categories || item.category || '';
+                document.getElementById('ttNotes').innerText = item.Notes || item.remark || item.note || '';
             });
 
             setupDelegatedTooltip('planScrollContainer', '.plan-item', 'planTooltip', (index) => {
                 const item = planProjectsData[index]; if (!item) return;
                 document.getElementById('planTtName').innerText = `${Number(index) + 1}. ${item.name}`;
-                document.getElementById('planTtCategory').innerText = item.category;
-                document.getElementById('planTtStatus').innerText = item.status;
+                document.getElementById('planTtCategory').innerText = item.category || '';
+                document.getElementById('planTtStatus').innerText = item.status || '';
                 document.getElementById('planTtStatus').className = `text-[11px] px-2 py-0.5 rounded border font-mono font-medium ${getPlanStatusBadge(item.status)}`;
-                document.getElementById('planTtCurrent').innerText = item.currentStyle || item.currentStatus;
-                document.getElementById('planTtImprovement').innerText = item.improvement;
-                document.getElementById('planTtCost').innerText = `¥ ${item.cost} 万元`;
-                document.getElementById('planTtBenefit').innerText = `¥ ${item.benefit} 万元/年`;
-                document.getElementById('planTtEndTime').innerText = item.endTime;
-                document.getElementById('planTtManager').innerText = item.manager;
-                document.getElementById('planTtProgressDesc').innerText = item.progressDesc;
+                document.getElementById('planTtCurrent').innerText = item.currentStyle || item.currentStatus || '';
+                document.getElementById('planTtImprovement').innerText = item.improvement || '';
+                document.getElementById('planTtCost').innerText = item.cost ? `¥ ${item.cost} 万元` : '';
+                document.getElementById('planTtBenefit').innerText = item.benefit ? `¥ ${item.benefit} 万元/年` : '';
+                document.getElementById('planTtEndTime').innerText = item.endTime || '';
+                document.getElementById('planTtManager').innerText = item.manager || '';
+                document.getElementById('planTtProgressDesc').innerText = item.progressDesc || '';
             });
 
             setupDelegatedTooltip('assetTableBody', '.asset-row', 'assetTooltip', (index) => {
                 const item = assetData[index]; if (!item) return;
                 const formattedDiff = getFormattedDiff(item);
                 const isOver = String(formattedDiff).startsWith('+') || parseFloat(formattedDiff) > 100;
-                document.getElementById('assetTtName').innerText = item.name;
-                document.getElementById('assetTtCategory').innerText = item.category;
-                document.getElementById('assetTtDept').innerText = item.dept;
-                document.getElementById('assetTtMonth').innerText = item.month;
-                document.getElementById('assetTtBudget').innerText = `¥ ${item.budget}`;
-                document.getElementById('assetTtActual').innerText = `¥ ${item.actual}`;
+                document.getElementById('assetTtName').innerText = item.name || '';
+                document.getElementById('assetTtCategory').innerText = item.category || '';
+                document.getElementById('assetTtDept').innerText = item.dept || '';
+                document.getElementById('assetTtMonth').innerText = item.month || '';
+                document.getElementById('assetTtBudget').innerText = item.budget ? `¥ ${item.budget}` : '';
+                document.getElementById('assetTtActual').innerText = item.actual ? `¥ ${item.actual}` : '';
                 document.getElementById('assetTtDiff').innerText = formattedDiff;
                 document.getElementById('assetTtDiff').className = `font-mono font-bold ${isOver ? 'text-amber-400' : 'text-emerald-400'}`;
-                document.getElementById('assetTtStatus').innerText = item.status;
+                document.getElementById('assetTtStatus').innerText = item.status || '';
                 document.getElementById('assetTtStatus').className = `text-[11px] px-2 py-0.5 rounded border font-mono font-medium ${item.status === '正常' ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' : 'bg-amber-500/20 text-amber-300 border-amber-500/30'}`;
             });
         });
