@@ -578,7 +578,7 @@
             const statusVal = document.getElementById('filterProjectStatus').value;
 
             const filtered = projectsData.filter((item) => {
-                const itemStatus = item.status || (item.progress >= 100 ? '已完成' : '进行中');
+                const itemStatus = item.status || (item.progress >= 100 ? '已完成'  : '进行中');
                 const itemCat = item.Categories || item.category || '';
                 return (!nameVal || (item.name && item.name.toLowerCase().includes(nameVal))) &&
                        (!deptVal || item.dept === deptVal) &&
