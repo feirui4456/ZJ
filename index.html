@@ -17,28 +17,104 @@
     <style>
         body { background-color: #090d16; color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         
-        /* 多彩独立图框背景样式与发光动画 */
-        .panel-emerald { background: linear-gradient(135deg, rgba(6, 95, 70, 0.4) 0%, rgba(15, 23, 42, 0.8) 100%); backdrop-filter: blur(12px); border: 1px solid rgba(52, 211, 153, 0.4); box-shadow: 0 8px 32px 0 rgba(4, 120, 87, 0.15); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .panel-emerald:hover { border-color: rgba(52, 211, 153, 0.9); box-shadow: 0 0 30px rgba(52, 211, 153, 0.45); }
+        /* 多彩独立图框背景样式（已去掉 backdrop-filter 模糊效果） */
+        .panel-emerald { 
+            background: linear-gradient(135deg, rgba(6, 95, 70, 0.7) 0%, rgba(15, 23, 42, 0.95) 100%); 
+            border: 1px solid rgba(52, 211, 153, 0.4); 
+            box-shadow: 0 8px 32px 0 rgba(4, 120, 87, 0.15); 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+        }
+        .panel-emerald:hover { 
+            border-color: rgba(52, 211, 153, 1); 
+            box-shadow: 0 0 25px rgba(52, 211, 153, 0.6), 0 0 50px rgba(52, 211, 153, 0.25); 
+        }
 
-        .panel-cyan { background: linear-gradient(135deg, rgba(14, 116, 144, 0.4) 0%, rgba(15, 23, 42, 0.8) 100%); backdrop-filter: blur(12px); border: 1px solid rgba(34, 211, 238, 0.4); box-shadow: 0 8px 32px 0 rgba(8, 145, 178, 0.15); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .panel-cyan:hover { border-color: rgba(34, 211, 238, 0.9); box-shadow: 0 0 30px rgba(34, 211, 238, 0.45); }
+        .panel-cyan { 
+            background: linear-gradient(135deg, rgba(14, 116, 144, 0.7) 0%, rgba(15, 23, 42, 0.95) 100%); 
+            border: 1px solid rgba(34, 211, 238, 0.4); 
+            box-shadow: 0 8px 32px 0 rgba(8, 145, 178, 0.15); 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+        }
+        .panel-cyan:hover { 
+            border-color: rgba(34, 211, 238, 1); 
+            box-shadow: 0 0 25px rgba(34, 211, 238, 0.6), 0 0 50px rgba(34, 211, 238, 0.25); 
+        }
 
-        .panel-indigo { background: linear-gradient(135deg, rgba(67, 56, 202, 0.35) 0%, rgba(15, 23, 42, 0.8) 100%); backdrop-filter: blur(12px); border: 1px solid rgba(129, 140, 248, 0.4); box-shadow: 0 8px 32px 0 rgba(79, 70, 229, 0.15); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .panel-indigo:hover { border-color: rgba(129, 140, 248, 0.9); box-shadow: 0 0 30px rgba(129, 140, 248, 0.45); }
+        .panel-indigo { 
+            background: linear-gradient(135deg, rgba(67, 56, 202, 0.65) 0%, rgba(15, 23, 42, 0.95) 100%); 
+            border: 1px solid rgba(129, 140, 248, 0.4); 
+            box-shadow: 0 8px 32px 0 rgba(79, 70, 229, 0.15); 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+        }
+        .panel-indigo:hover { 
+            border-color: rgba(129, 140, 248, 1); 
+            box-shadow: 0 0 25px rgba(129, 140, 248, 0.6), 0 0 50px rgba(129, 140, 248, 0.25); 
+        }
 
-        .panel-amber { background: linear-gradient(135deg, rgba(180, 83, 9, 0.35) 0%, rgba(15, 23, 42, 0.8) 100%); backdrop-filter: blur(12px); border: 1px solid rgba(251, 191, 36, 0.4); box-shadow: 0 8px 32px 0 rgba(217, 119, 6, 0.15); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .panel-amber:hover { border-color: rgba(251, 191, 36, 0.9); box-shadow: 0 0 30px rgba(251, 191, 36, 0.45); }
+        .panel-amber { 
+            background: linear-gradient(135deg, rgba(180, 83, 9, 0.65) 0%, rgba(15, 23, 42, 0.95) 100%); 
+            border: 1px solid rgba(251, 191, 36, 0.4); 
+            box-shadow: 0 8px 32px 0 rgba(217, 119, 6, 0.15); 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+        }
+        .panel-amber:hover { 
+            border-color: rgba(251, 191, 36, 1); 
+            box-shadow: 0 0 25px rgba(251, 191, 36, 0.6), 0 0 50px rgba(251, 191, 36, 0.25); 
+        }
 
-        .panel-slate { background: linear-gradient(135deg, rgba(30, 41, 59, 0.75) 0%, rgba(15, 23, 42, 0.9) 100%); backdrop-filter: blur(12px); border: 1px solid rgba(148, 163, 184, 0.25); box-shadow: 0 8px 32px 0 rgba(15, 23, 42, 0.3); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .panel-slate:hover { border-color: rgba(56, 189, 248, 0.8); box-shadow: 0 0 25px rgba(56, 189, 248, 0.35); }
+        .panel-slate { 
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.85) 0%, rgba(15, 23, 42, 0.95) 100%); 
+            border: 1px solid rgba(148, 163, 184, 0.25); 
+            box-shadow: 0 8px 32px 0 rgba(15, 23, 42, 0.3); 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+        }
+        .panel-slate:hover { 
+            border-color: rgba(56, 189, 248, 0.9); 
+            box-shadow: 0 0 25px rgba(56, 189, 248, 0.5), 0 0 50px rgba(56, 189, 248, 0.2); 
+        }
 
         .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
         
-        @keyframes auroraFlow { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-        .aurora-bottom-bar { position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #3b82f6, #06b6d4, #a855f7, #10b981, #3b82f6); background-size: 300% 100%; animation: auroraFlow 150s linear infinite; border-bottom-left-radius: 0.75rem; border-bottom-right-radius: 0.75rem; }
+        /* 底部极光/彩光流动特效 */
+        @keyframes auroraFlow { 
+            0% { background-position: 0% 50%; } 
+            50% { background-position: 100% 50%; } 
+            100% { background-position: 0% 50%; } 
+        }
         
+        /* 交互图框底部彩光：鼠标悬停时激活 */
+        .interactive-module {
+            position: relative;
+            z-index: 1;
+            transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            overflow: hidden; /* 确保底部彩光不会超出圆角 */
+        }
+        
+        .interactive-module::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3.5px;
+            background: linear-gradient(90deg, #ec4899, #8b5cf6, #3b82f6, #06b6d4, #10b981, #f59e0b, #ec4899);
+            background-size: 300% 100%;
+            animation: auroraFlow 4s linear infinite;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .interactive-module:hover::after {
+            opacity: 1;
+        }
+
+        .interactive-module:hover {
+            transform: translateY(-6px) scale(1.01);
+            z-index: 10;
+        }
+
         @keyframes autoScrollUp { 0% { transform: translateY(0); } 100% { transform: translateY(-50%); } }
         .scroll-wrapper { position: relative; height: 250px; overflow: hidden; }
         .scroll-inner { display: flex; flex-direction: column; animation: autoScrollUp 150s linear infinite; }
@@ -49,6 +125,7 @@
         .table-scroll-inner { animation: tableAutoScroll 220s linear infinite; }
         .table-scroll-wrapper:hover .table-scroll-inner { animation-play-state: paused; }
 
+        /* 去掉弹窗等的背景模糊 */
         .custom-tooltip { pointer-events: none !important; transition: opacity 0.2s ease-out, top 0.05s ease-out, left 0.05s ease-out; will-change: top, left, opacity; z-index: 9999; }
 
         /* 霓虹光标跟随特效容器与光晕样式 */
@@ -66,22 +143,6 @@
             will-change: transform;
         }
         .neon-wrapper:hover .neon-glow { opacity: 1; }
-
-        /* 悬浮模块高亮发光与立体浮动效果 */
-        body:has(.interactive-module:hover) .interactive-module:not(:hover) {
-            filter: blur(4px);
-            opacity: 0.45;
-            transform: scale(0.99);
-        }
-        .interactive-module {
-            position: relative;
-            z-index: 1;
-            transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.3s ease, opacity 0.3s ease;
-        }
-        .interactive-module:hover {
-            transform: translateY(-6px) scale(1.01);
-            z-index: 10;
-        }
     </style>
 </head>
 <body class="min-h-screen p-4 md:p-6 custom-scrollbar relative neon-wrapper">
@@ -89,8 +150,8 @@
     <!-- 光晕跟随元素 -->
     <div class="neon-glow" id="neonGlow"></div>
 
-    <!-- Tooltips -->
-    <div id="projectTooltip" class="custom-tooltip fixed hidden opacity-0 panel-cyan rounded-xl p-4 w-72 shadow-2xl bg-slate-900/95 backdrop-blur-md">
+    <!-- Tooltips (移除了 backdrop-blur-md) -->
+    <div id="projectTooltip" class="custom-tooltip fixed hidden opacity-0 panel-cyan rounded-xl p-4 w-72 shadow-2xl bg-slate-900/95">
         <div class="flex justify-between items-start mb-2.5 pb-2 border-b border-slate-700/80">
             <h4 id="ttName" class="font-bold text-sm text-cyan-300"></h4>
             <span id="ttStatus" class="text-[11px] px-2 py-0.5 rounded font-mono font-medium"></span>
@@ -105,7 +166,7 @@
          </div>
     </div>
 
-    <div id="planTooltip" class="custom-tooltip fixed hidden opacity-0 panel-indigo rounded-xl p-4 w-80 shadow-2xl bg-slate-900/95 backdrop-blur-md">
+    <div id="planTooltip" class="custom-tooltip fixed hidden opacity-0 panel-indigo rounded-xl p-4 w-80 shadow-2xl bg-slate-900/95">
         <div class="flex justify-between items-start mb-2.5 pb-2 border-b border-slate-700/80">
             <div>
                 <h4 id="planTtName" class="font-bold text-sm text-indigo-300"></h4>
@@ -128,7 +189,7 @@
         </div>
     </div>
 
-    <div id="assetTooltip" class="custom-tooltip fixed hidden opacity-0 panel-emerald rounded-xl p-4 w-80 shadow-2xl bg-slate-900/95 backdrop-blur-md">
+    <div id="assetTooltip" class="custom-tooltip fixed hidden opacity-0 panel-emerald rounded-xl p-4 w-80 shadow-2xl bg-slate-900/95">
         <div class="flex justify-between items-start mb-2.5 pb-2 border-b border-slate-700/80">
             <div>
                 <h4 id="assetTtName" class="font-bold text-sm text-emerald-300"></h4>
@@ -150,7 +211,7 @@
     </div>
 
     <!-- Header -->
-    <header class="panel-indigo interactive-module rounded-xl p-4 mb-6 flex flex-col md:flex-row justify-between items-center gap-4 shadow-xl relative overflow-hidden">
+    <header class="panel-indigo interactive-module rounded-xl p-4 mb-6 flex flex-col md:flex-row justify-between items-center gap-4 shadow-xl relative">
         <div class="flex items-center gap-3.5 z-10">
             <div class="p-2.5 bg-slate-800/90 rounded-xl border border-indigo-500/40 text-indigo-400"><i data-lucide="building-2" class="w-6 h-6"></i></div>
             <div>
@@ -163,32 +224,31 @@
             <div class="flex items-center gap-2 bg-slate-900/80 px-3 py-1.5 rounded-lg border border-indigo-500/30"><i data-lucide="calendar" class="w-4 h-4 text-indigo-400"></i><span id="headerDate" class="font-mono"></span></div>
             <div class="flex items-center gap-2 bg-slate-900/80 px-3 py-1.5 rounded-lg border border-indigo-500/30"><i data-lucide="user-check" class="w-4 h-4 text-emerald-400"></i><span id="headerUser"></span></div>
         </div>
-        <div class="aurora-bottom-bar"></div>
     </header>
 
     <!-- KPI 区域 -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <div class="panel-cyan interactive-module p-5 rounded-xl flex items-center justify-between relative overflow-hidden group cursor-pointer">
+        <div class="panel-cyan interactive-module p-5 rounded-xl flex items-center justify-between relative group cursor-pointer">
             <div>
                 <p class="text-sm font-medium text-cyan-200 flex items-center gap-1.5"><i data-lucide="wallet" class="w-4 h-4 text-cyan-300"></i> 年度项目总预算</p>
                 <h2 class="text-2xl font-bold text-white mt-2 font-mono">¥ <span id="kpiTotalBudget"></span> <span id="kpiTotalBudgetUnit" class="text-base font-normal text-slate-300"></span></h2>
             </div>
         </div>
-        <div class="panel-amber interactive-module p-5 rounded-xl flex items-center justify-between relative overflow-hidden group cursor-pointer">
+        <div class="panel-amber interactive-module p-5 rounded-xl flex items-center justify-between relative group cursor-pointer">
             <div>
                 <p class="text-sm font-medium text-amber-200 flex items-center gap-1.5"><i data-lucide="credit-card" class="w-4 h-4 text-amber-300"></i> 实际已支出</p>
                 <h2 class="text-2xl font-bold text-white mt-2 font-mono">¥ <span id="kpiActualSpend"></span> <span id="kpiActualSpendUnit" class="text-base font-normal text-slate-300"></span></h2>
                 <span id="kpiExecutionRate" class="inline-block mt-1 text-xs px-2 py-0.5 bg-amber-500/30 text-amber-200 border border-amber-500/40 rounded font-mono"></span>
             </div>
         </div>
-        <div class="panel-emerald interactive-module p-5 rounded-xl flex items-center justify-between relative overflow-hidden group cursor-pointer">
+        <div class="panel-emerald interactive-module p-5 rounded-xl flex items-center justify-between relative group cursor-pointer">
             <div>
                 <p class="text-sm font-medium text-emerald-200 flex items-center gap-1.5"><i data-lucide="activity" class="w-4 h-4 text-emerald-300"></i> 年度工程总体进度</p>
                 <h2 class="text-2xl font-bold text-white mt-2 font-mono" id="overallProgressText"></h2>
                 <div class="w-32 bg-slate-800/80 h-2 rounded-full mt-2 overflow-hidden border border-emerald-500/30"><div id="overallProgressBar" class="bg-emerald-400 h-full rounded-full" style="width: 0%;"></div></div>
             </div>
         </div>
-        <div class="panel-indigo interactive-module p-5 rounded-xl flex items-center justify-between relative overflow-hidden group cursor-pointer">
+        <div class="panel-indigo interactive-module p-5 rounded-xl flex items-center justify-between relative group cursor-pointer">
             <div>
                 <p class="text-sm font-medium text-indigo-200 flex items-center gap-1.5"><i data-lucide="shield-check" class="w-4 h-4 text-indigo-300"></i> 预警状态</p>
                 <h2 id="kpiWarningStatus" class="text-xl font-bold text-emerald-400 mt-2 flex items-center gap-2"></h2>
@@ -264,7 +324,7 @@
     </div>
 
     <!-- 施工进度与里程碑 - 详细列表弹窗框 -->
-    <div id="projectModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[10000] hidden flex items-center justify-center p-4">
+    <div id="projectModal" class="fixed inset-0 bg-slate-950/80 z-[10000] hidden flex items-center justify-center p-4">
         <div class="panel-cyan w-full max-w-[95vw] rounded-2xl p-6 shadow-2xl bg-slate-900/95 flex flex-col max-h-[85vh]">
             <div class="flex justify-between items-center pb-4 mb-4 border-b border-slate-700/80">
                 <div class="flex items-center gap-2.5">
@@ -279,7 +339,7 @@
 
             <div class="flex-1 overflow-auto custom-scrollbar border border-slate-800 rounded-xl">
                 <table class="w-full text-left text-sm text-slate-300 border-collapse min-w-[1300px]">
-                    <thead class="bg-slate-900/95 text-xs text-slate-300 sticky top-0 z-10 backdrop-blur-md border-b border-slate-700">
+                    <thead class="bg-slate-900/95 text-xs text-slate-300 sticky top-0 z-10 border-b border-slate-700">
                         <tr>
                             <th class="p-3 font-semibold text-center w-12 text-slate-400">#</th>
                             <th class="p-3 font-semibold w-48">
@@ -324,7 +384,7 @@
     </div>
 
     <!-- 27年规划技改项目 - 详细列表弹窗框 -->
-    <div id="planModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[10000] hidden flex items-center justify-center p-4">
+    <div id="planModal" class="fixed inset-0 bg-slate-950/80 z-[10000] hidden flex items-center justify-center p-4">
         <div class="panel-indigo w-full max-w-[95vw] rounded-2xl p-6 shadow-2xl bg-slate-900/95 flex flex-col max-h-[85vh]">
             <div class="flex justify-between items-center pb-4 mb-4 border-b border-slate-700/80">
                 <div class="flex items-center gap-2.5">
@@ -342,7 +402,7 @@
                     <colgroup>
                         <col style="width: 4%;"><col style="width: 11%;"><col style="width: 7%;"><col style="width: 15%;"><col style="width: 15%;"><col style="width: 10%;"><col style="width: 7%;"><col style="width: 6%;"><col style="width: 7%;"><col style="width: 10%;"><col style="width: 8%;">
                     </colgroup>
-                    <thead class="bg-slate-900/95 text-xs text-slate-300 sticky top-0 z-10 backdrop-blur-md border-b border-slate-700">
+                    <thead class="bg-slate-900/95 text-xs text-slate-300 sticky top-0 z-10 border-b border-slate-700">
                         <tr>
                             <th class="p-2.5 font-semibold text-center text-slate-400">#</th>
                             <th class="p-2.5 font-semibold"><div class="flex flex-col gap-1"><span>项目名称</span><input type="text" id="filterPlanName" placeholder="筛选..." class="w-full px-1.5 py-0.5 bg-slate-950 border border-slate-700 rounded text-[11px] text-slate-200 focus:outline-none focus:border-indigo-400"></div></th>
@@ -369,7 +429,7 @@
     </div>
 
     <!-- 资产支出明细数据表 - 详细列表弹窗框 -->
-    <div id="assetModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[10000] hidden flex items-center justify-center p-4">
+    <div id="assetModal" class="fixed inset-0 bg-slate-950/80 z-[10000] hidden flex items-center justify-center p-4">
         <div class="panel-emerald w-full max-w-[95vw] rounded-2xl p-6 shadow-2xl bg-slate-900/95 flex flex-col max-h-[85vh]">
             <div class="flex justify-between items-center pb-4 mb-4 border-b border-slate-700/80">
                 <div class="flex items-center gap-2.5">
@@ -387,7 +447,7 @@
                     <colgroup>
                         <col style="width: 5%;"><col style="width: 20%;"><col style="width: 11%;"><col style="width: 11%;"><col style="width: 11%;"><col style="width: 11%;"><col style="width: 11%;"><col style="width: 10%;"><col style="width: 10%;">
                     </colgroup>
-                    <thead class="bg-slate-900/95 text-xs text-slate-300 sticky top-0 z-10 backdrop-blur-md border-b border-slate-700">
+                    <thead class="bg-slate-900/95 text-xs text-slate-300 sticky top-0 z-10 border-b border-slate-700">
                         <tr>
                             <th class="p-3 font-semibold text-center text-slate-400">#</th>
                             <th class="p-3 font-semibold"><div class="flex flex-col gap-1.5"><span class="text-slate-200">资产名称</span><input type="text" id="filterAssetName" placeholder="筛选资产..." class="w-full px-2 py-1 bg-slate-950 border border-slate-700 rounded text-xs text-slate-200 focus:outline-none focus:border-emerald-400"></div></th>
